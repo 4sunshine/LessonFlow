@@ -13,11 +13,11 @@ public:
 
 
 signals:
-    void subjectSelected(int);
+    void subjectSelected(int, int);
 
 public slots:
     void setQProperty(QString name, QStringList value);
-    void classSelected(int);
+    void classSelected(int, int);
     void setContext();
     void changeWindowSize();
 

@@ -7,8 +7,8 @@ EngineHandler::EngineHandler(QObject *parent) : QObject(parent),
     QObject::connect(&model,SIGNAL(dataGot(QString, QStringList)),
                     this,SLOT(setQProperty(QString, QStringList)));
 
-    QObject::connect(this,SIGNAL(subjectSelected(int)),
-                         &model,SLOT(classSelected(int)));
+    QObject::connect(this,SIGNAL(subjectSelected(int,int)),
+                         &model,SLOT(classSelected(int,int)));
 
     QObject::connect(&model,SIGNAL(gridPrepared()),
                      this,SLOT(setContext()));
@@ -16,8 +16,8 @@ EngineHandler::EngineHandler(QObject *parent) : QObject(parent),
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
     window = engine.rootObjects()[0];
     ctxt = engine.rootContext();
-    QObject::connect(window,SIGNAL(subjectSelected(int)),
-                     this,SLOT(classSelected(int)));
+    QObject::connect(window,SIGNAL(subjectSelected(int, int)),
+                     this,SLOT(classSelected(int, int)));
 
 }
 
@@ -30,9 +30,9 @@ void EngineHandler::setQProperty(QString name, QStringList value)
     }
 }
 
-void EngineHandler::classSelected(int classNum)
+void EngineHandler::classSelected(int classNum, int lessonNumber)
 {
-    emit subjectSelected(classNum);
+    emit subjectSelected(classNum, lessonNumber);
 }
 
 void EngineHandler::setContext()

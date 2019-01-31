@@ -65,7 +65,7 @@ void SheetsModel::makeClassesRepresent()
         classesRepresent<<(classNames[i]->subject+' '+classNames[i]->className);
 }
 
-void SheetsModel::classSelected(int classId)
+void SheetsModel::classSelected(int classId, int lessonNum)
 {
     qInfo()<<classId;
     sheetId = classNames[classId]->sheetId;
@@ -93,6 +93,7 @@ void SheetsModel::classSelected(int classId)
         qInfo()<<students;
         qInfo()<<sex;
         qInfo()<<names;
+        qInfo()<<lessonNum;
         getDates();
     });
 }
@@ -162,7 +163,11 @@ void SheetsModel::getDates()
         }
 
         dataSize = i; //LENGTH OF DATA WITH MARKS & ATTENDANCE
+//        qInfo() << ct;
+        qInfo() << "LESSON NUMBER ABOVE";
         curCol = columnIndexes[i+2]; //BECAUSE OF COLUMN INDEXES OF MARKS DATA
+        //ALSO IF THERE ARE SEVERAL LESSONS AT THE SAME DATE
+        qInfo() << curCol;
         googlewrapper.curCol = curCol;
 
         downloadData(); //DOWNLOAD MARKS & ATTENDANCE

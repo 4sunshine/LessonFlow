@@ -10,21 +10,25 @@ Tumbler {
     id: subjectsTumbler
     objectName: "subjectsTumbler"
     width: parent.width/2
-    signal selectedSubj(int sId);
-    onSelectedSubj: {
-        window.subjectSelected(sId)
-    }
+//    signal selectedSubj(int sId);//SELECTED SUBJECT ID
+//    onSelectedSubj: {
+//        window.subjectSelected(sId)
+//    }
 
     Item {
          id: selection
          anchors.fill: parent
          focus: true
          Keys.onReturnPressed: {
+             selection.focus = false
+             subjectsTumbler.visible = false
+             subjectsTumbler.enabled = false
              var newSpin = Qt.createComponent("lessonNumber.qml");
-             var lessonNum=newSpin.createObject(subjectsTumbler)
+             var lessonNum=newSpin.createObject(window, {ssId: 2
+                                                    /*subjectsTumbler.currentIndex*/})
 //             subjectsTumbler.selectedSubj(subjectsTumbler.currentIndex);
 //             subjectsTumbler.destroy(1)
-         }
+            }
          }
 
     }

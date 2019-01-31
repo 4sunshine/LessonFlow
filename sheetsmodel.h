@@ -118,7 +118,7 @@ signals:
 
 public slots:
     void grant(); //was public method
-    void classSelected(int classId);
+    void classSelected(int classId, int lessonNum);
 };
 
 #endif // SHEETSMODEL_H

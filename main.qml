@@ -4,7 +4,7 @@ import QtMultimedia 5.12
 
 Window {
 
-    signal subjectSelected(int classIndex)
+    signal subjectSelected(int classIndex, int lessonNumber)
 
     property var models
     property var popups
@@ -49,8 +49,5 @@ Window {
         y: image.height/4
         source: "path868white.png"
     }
-
-
-
 
 }
