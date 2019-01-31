@@ -20,8 +20,10 @@ Tumbler {
          anchors.fill: parent
          focus: true
          Keys.onReturnPressed: {
-             subjectsTumbler.selectedSubj(subjectsTumbler.currentIndex);
-             subjectsTumbler.destroy(1)
+             var newSpin = Qt.createComponent("lessonNumber.qml");
+             var lessonNum=newSpin.createObject(subjectsTumbler)
+//             subjectsTumbler.selectedSubj(subjectsTumbler.currentIndex);
+//             subjectsTumbler.destroy(1)
          }
          }
 
