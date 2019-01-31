@@ -74,7 +74,7 @@ private:
     void getNames(); //get students names and surnames
     void googleSay(QString phrase); //MAKE SPEECH
     void prepareGrid();
-    void getDates();
+    void getDates(int lessonNumber);
 
 
 

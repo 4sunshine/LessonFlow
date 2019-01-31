@@ -94,11 +94,11 @@ void SheetsModel::classSelected(int classId, int lessonNum)
         qInfo()<<sex;
         qInfo()<<names;
         qInfo()<<lessonNum;
-        getDates();
+        getDates(lessonNum);
     });
 }
 
-void SheetsModel::getDates()
+void SheetsModel::getDates(int lessonNum)
 {
     auto replyd = googlewrapper.getDateList();
 
@@ -132,9 +132,10 @@ void SheetsModel::getDates()
             connect(reply3, &QNetworkReply::finished, [=]() {
                 if (reply3->error() != QNetworkReply::NoError) {
                     emit error(reply3->errorString());
+                    qInfo() << "PLUMIN ERROR";
                     return;
                 }
-
+                qInfo() << "PLUMIN SUCCESS";
                 const QJsonArray dataPM = readJSONArray(reply3);
 
                 for (int i = 0; i < dataPM.size();i++) //READING PLUMINS TO CLASS
@@ -147,25 +148,24 @@ void SheetsModel::getDates()
 
             });
         }
-
         QDateTime curDate;
         int moN = curDate.currentDateTime().date().month();
         int daY = curDate.currentDateTime().date().day();
-
+/*********POSSIBLE BUG IF LESSON EARLIER THAN 1st LESSON OF MONTH. MUST CHECK************/
         int i = 0;
 
-        while((months[moN-1] != datMo[i][0].toString())){
+        while(!datMo[i][0].isUndefined()&&(months[moN-1] != datMo[i][0].toString())){
             i++;
         }
 
-        while(!datMo[i][1].isUndefined()&&(daY >= datMo[i][1].toString().toInt())){
+        while(!datMo[i][1].isUndefined()&&(daY > datMo[i][1].toString().toInt())){
             i++;
         }
-
-        dataSize = i; //LENGTH OF DATA WITH MARKS & ATTENDANCE
-//        qInfo() << ct;
-        qInfo() << "LESSON NUMBER ABOVE";
-        curCol = columnIndexes[i+2]; //BECAUSE OF COLUMN INDEXES OF MARKS DATA
+/***********************************************************************************/
+        //RECHECK DATASIZE!!!
+        dataSize = i + lessonNum; //LENGTH OF DATA WITH MARKS & ATTENDANCE
+        qInfo() << "CURRENT COLUMN UNDER";
+        curCol = columnIndexes[i+2+lessonNum]; //BECAUSE OF COLUMN INDEXES OF MARKS DATA
         //ALSO IF THERE ARE SEVERAL LESSONS AT THE SAME DATE
         qInfo() << curCol;
         googlewrapper.curCol = curCol;

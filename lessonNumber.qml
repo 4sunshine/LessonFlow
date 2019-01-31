@@ -23,7 +23,8 @@ Column{
     SpinBox {
         id: spinNum
         value: 1
-        from: 1
+        from: 0 // 0 IF LESSON OUT OF TIMETABLE. ALSO IF LESSON OUT OF TIMETABLE BEFORE
+        //FIRST LESSON AT SEMESTER MUST BE CHECKED
         to: 6
         focus: true
         stepSize: 1
