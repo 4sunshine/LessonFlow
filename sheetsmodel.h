@@ -118,7 +118,7 @@ signals:
     void error(const QString &errorString);
     void dataGot(QString, QStringList);//EMIT WHEN CLASSES GOT OR STUDENTS COMPLETED!!!
     void gridPrepared();
-    void audioReady();
+//    void audioReady();
     void studentSelected(int studentId);
 
 

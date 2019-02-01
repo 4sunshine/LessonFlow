@@ -9,7 +9,8 @@ SheetsModel::SheetsModel(QObject *parent) : QObject(parent),
     grant();
     connect(&listener, &Listener::buttonEvent, this, &SheetsModel::btnHandler);
     connect(&listener, &Listener::irSignal, this, &SheetsModel::irHandler);
-    connect(this,&SheetsModel::audioReady,this,&SheetsModel::playAudio);
+//    connect(this,&SheetsModel::audioReady,this,&SheetsModel::playAudio);
+
     xCase.seed();
 }
 
@@ -238,12 +239,12 @@ void SheetsModel::downloadData()
 
 
             prepareGrid(); //PREPARE GRID AT START
-            listener.isActive = true; //start recieve data from server
+            listener.isActive = true; //start receive data from server
             qInfo()<< "LISTENER STATUS:";
             qInfo()<< listener.isActive;
             emit gridPrepared();
 //*******************************************************************
-//            googleSay("Привет, ребята! Отметьтесь на уроке");
+            googleSay("Привет, ребята! Отметьтесь на уроке");
 
             emit dataGot("popups",students);//STUDENTS COMPLETED SIGNAL
 
@@ -408,16 +409,19 @@ QString SheetsModel::setAva(int i)
 
 void SheetsModel::playAudio()
 {
+    audioStream.close();
     audioStream.setData(bytesOfSound);
     audioStream.open(QIODevice::ReadOnly);
     player.setMedia(QMediaContent(),&audioStream);
     player.setVolume(99);
     player.play();
+//CONNECTION BTW PLAYER.STOPPED AND AUDIOSTREAM.CLOSE MUST BE IMPLEMENTED
     qInfo() << "PLAY SOUND";
 }
 
 void SheetsModel::googleSay(QString phrase)
 {
+    bytesOfSound.clear();
     auto replygo = googlewrapper.speechGet(QString::fromUtf8(phrase.toUtf8()));
     connect(replygo, &QNetworkReply::finished, [=]() {
         if (replygo->error() != QNetworkReply::NoError) {
@@ -430,7 +434,7 @@ void SheetsModel::googleSay(QString phrase)
         const auto rootObject = QJsonDocument::fromJson(json).object();
         QByteArray zzz = rootObject.value("audioContent").toString().toUtf8();
         bytesOfSound = QByteArray::fromBase64(zzz);
-        audioReady();
+        playAudio();
     });
 }
 
@@ -562,6 +566,7 @@ void SheetsModel::callStudent()
 
     if (order.isEmpty()){
         int id = coinToss(decisionList);
+        googleSay("Отвечает "+names[id]+" "+surnames[id]);
         isMain[id] = !isMain[id];
         SingleStudent bounded = createSingle(id);
         studentsflow.addStudent(bounded);
@@ -569,6 +574,7 @@ void SheetsModel::callStudent()
     }
     else {
         int id = coinToss(currentDecisionList);
+        googleSay("Отвечает "+names[id]+" "+surnames[id]);
         isMain[id] = !isMain[id];
         studentsflow.activeStudent(id);
         emit studentSelected(id); //REVISE IS IT NEEDED?
