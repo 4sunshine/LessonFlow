@@ -65,22 +65,44 @@ QHash<int, QByteArray> StudentsFlow::roleNames() const {
     roles[PlusesRole] = "pluses";
     roles[AvatarRole] = "avatar";
     roles[StatusRole] = "status";
+    roles[IsMainRole] = "isMain";
     return roles;
 }
 //![0]
 
 bool StudentsFlow::setData(const QModelIndex &index, const QVariant &value, int role)
 {
-    if (index.row() >= 0 && index.row() < rowCount()
-        && (role==StatusRole))//(role == Qt::EditRole || role == Qt::DisplayRole))
+    if (index.row() >= 0 && index.row() < rowCount())
     {
         SingleStudent local = m_students[index.row()];
-        m_students.replace(index.row(), SingleStudent(local.order(),local.name(),local.surname(),
+        switch (role) {
+        case StatusRole:
+
+            m_students.replace(index.row(), SingleStudent(local.order(),local.name(),
+                                                      local.surname(),
                                                       local.pluses(),
                                                       local.average(),
-                                                      local.avatar(),value.toBool()));
-        emit dataChanged(index, index, {role});
-        return true;
+                                                      local.avatar(),value.toBool(),
+                                                      local.isMain()));
+            emit dataChanged(index, index, {role});
+            return true;
+
+        case IsMainRole:
+
+            m_students.replace(index.row(), SingleStudent(local.order(),local.name(),
+                                                      local.surname(),
+                                                      local.pluses(),
+                                                      local.average(),
+                                                      local.avatar(),local.status(),
+                                                      value.toBool()));
+            qInfo() << "MAIN CHANGED";
+            qInfo() << m_students[0].isMain();
+            emit dataChanged(index, index, {role});
+            return true;
+
+        default:
+            return false;
+        }
     }
     return false;
 }
@@ -97,6 +119,11 @@ void StudentsFlow::setIsOn(int i)
     setData(this->index(i), true, StatusRole);
 }
 
+void StudentsFlow::setMain()
+{
+    setData(this->index(0), true, IsMainRole);
+}
+
 void StudentsFlow::removeAll()
 {
     int i = rowCount();
@@ -106,4 +133,22 @@ void StudentsFlow::removeAll()
         endRemoveRows();
         i--;
     }
+}
+
+void StudentsFlow::activeStudent(int id)
+{
+    qInfo() << id;
+    int i = rowCount() - 1 ; //INITIAL I MUST BE ROWCOUNT-1 <INDEX OUT OF RANGE>
+    while (rowCount() > 1){
+        if (m_students[i].order() != id)
+        {
+            qInfo() << i;
+            beginRemoveRows(QModelIndex(),i,i);
+            m_students.removeAt(i);
+            endRemoveRows();
+        }
+        i--;
+    }
+    qInfo() << "SET MAIN";
+    setMain();
 }

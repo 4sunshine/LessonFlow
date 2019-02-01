@@ -18,13 +18,15 @@ GridView {
 
         Column{
 
+
         id: curItem
 
         Image {
             id: avatarImage
             source: avatar//"file:///home/sunshine/qtprojects/smartjournal/avatar/10А/25.png"
-            width: 8*studentsGrid.cellWidth/10
+            width: (!isMain) ? 8*studentsGrid.cellWidth/10 : 2*studentsGrid.cellWidth
             height: width
+
 
             Rectangle{
                 id: dataRecta

@@ -2,6 +2,7 @@
 #define SHEETSMODEL_H
 
 #include <QMediaPlayer>
+#include <QRandomGenerator>
 #include "googlewrapper.h"
 #include "listener.h"
 #include "studentsflow.h"
@@ -32,7 +33,7 @@ private:
     QBuffer audioStream; //BUFFER TO PLAY
     QByteArray bytesOfSound; //AUDIO DATA
 
-
+    QRandomGenerator xCase;
     QList<ClassList*> classNames; //LIST OF STRUCTURES CLASSLIST
     QStringList columnIndexes; //LIST OF COLUMN INDEXES
     QStringList classesRepresent; //LIST OF SUBJS&CLASSES FOR INTERFACE
@@ -45,6 +46,7 @@ private:
     QList<int> actions; //COUNT OF ACTIONS --> PERMANENTLY 0
     QList<bool> isActive; //STUDENT IS ON SCREEN OR NOT --> PERMANENTLY FALSE
     QList<bool> isOn; //IS STUDENT ATTENDING THE LESSON
+    QList<bool> isMain; //IS STUDENT CURRENTLY MAIN
     QList<double> probability; //PROBABILITY OF ASKING STUDENT: SEE MATHEMATICAL MODEL
     QList<double> decisionList; //PROB [ STUD_id ] OF MAX RANGES VALUES IN [0,1]
     QList<double> currentProbability; //PROBABILITY AT CURRENT QUESTION
@@ -57,7 +59,7 @@ private:
     QString curClass; //CURRENT CLASS
     QString curCol; //CURRENT COLUMN INDEX
     QList<QStringList*> mksAtd; //LIST OF MARKS
-    QString sheetId;
+    QString sheetId; //ID OF DATA SHEET
     bool isLessonStarted = false;
 
     int dataSize;
@@ -74,9 +76,12 @@ private:
     void getNames(); //get students names and surnames
     void googleSay(QString phrase); //MAKE SPEECH
     void prepareGrid();
+    void callStudent(); //MAKE A DECISION FROM PROBABIBILITIES LIST
     void getDates(int lessonNumber);
 
+    int coinToss(QList<double>); //RETURN STUDENT'S ID TO ASK FROM DECISION LIST
 
+    const SingleStudent createSingle(int id); //CREATE A SINGLE STUDENT BY ID
 
     QString getSex(QString name); //get students sex: can be "M" or "F"
     QString setAva(int i);// CREATE AVATAR FOR INDEX I
@@ -85,6 +90,7 @@ private:
 
     QJsonArray readJSONArray(QNetworkReply* reply); //READS JSON ROWS DATA
 
+    // IR REMOTE CONTROL CODES FROM HEX TO DEC
     enum {
         UP = 16736925,
         DOWN = 16754775,
@@ -104,7 +110,6 @@ private slots:
     void btnHandler(int btnId); //HANDLE BUTTON EVENT
     void irHandler(int irCode); //HANDLE IR EVENT
     void playAudio();
-//    void callStudent(); //MAKE A DECISION FROM PROBABIBILITIES LIST
     void updateTotalProb(); //UPDATE PROBABILITIES FOR ALL STUDENTS
     void updateCurrentProb(); //UPDATE PROBABILITIES FOR CURRENTLY ACTIVE STUDENTS
 
@@ -114,6 +119,7 @@ signals:
     void dataGot(QString, QStringList);//EMIT WHEN CLASSES GOT OR STUDENTS COMPLETED!!!
     void gridPrepared();
     void audioReady();
+    void studentSelected(int studentId);
 
 
 public slots:

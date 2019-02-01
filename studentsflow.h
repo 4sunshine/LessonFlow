@@ -15,7 +15,8 @@ public:
         PlusesRole,
         AverageRole,
         AvatarRole,
-        StatusRole
+        StatusRole,
+        IsMainRole
     };
 
     StudentsFlow(QObject *parent = nullptr);
@@ -35,6 +36,10 @@ public:
     void setIsOn(int i);
 
     void removeAll();
+// DISCUSSION MODE MUST BE IMPLEMENTED WHEN SEVERAL STUDENTS ARE ACTIVE
+    void activeStudent(int id);
+
+    void setMain();
 
 protected:
     QHash<int, QByteArray> roleNames() const;

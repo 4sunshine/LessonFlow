@@ -10,6 +10,7 @@ SheetsModel::SheetsModel(QObject *parent) : QObject(parent),
     connect(&listener, &Listener::buttonEvent, this, &SheetsModel::btnHandler);
     connect(&listener, &Listener::irSignal, this, &SheetsModel::irHandler);
     connect(this,&SheetsModel::audioReady,this,&SheetsModel::playAudio);
+    xCase.seed();
 }
 
 void SheetsModel::grant()
@@ -84,6 +85,7 @@ void SheetsModel::classSelected(int classId, int lessonNum)
                 actions << 0;  //APPENDING STATUSES OF ACTIONS
                 isActive << false; //
                 isOn << false;
+                isMain << false;
                 names << classes[i][0].toString().section(' ',1,1); //APPENDING NAMES
                 surnames << classes[i][0].toString().section(' ',0,0); //APPNG SURNAMES
                 sex << getSex(names[i]); //SETTING SEX
@@ -296,12 +298,7 @@ void SheetsModel::btnHandler(int btnId)
         if (isActive[btnId-1])
         {
             qInfo() << "CREATE NEW STUDENTS";
-            QString averageString;
-            double avmCache = avMark[btnId-1];
-            studentsflow.addStudent(SingleStudent(btnId-1,names[btnId-1],surnames[btnId-1],
-                plumin[btnId-1],
-                      averageString.sprintf("%6.2f", avmCache),
-                      setAva(btnId-1),isOn[btnId-1]));
+            studentsflow.addStudent(createSingle(btnId-1));// IS MAIN FALSE PERMANENTLY
             order << btnId-1;
             updateCurrentProb();
             qInfo() << currentProbability;
@@ -347,6 +344,10 @@ void SheetsModel::irHandler(int irCode)
                 qInfo() << probability;
                 qInfo() << decisionList;
             }
+            else {
+                callStudent();
+            }
+
             break;
         case TWO:
 
@@ -383,16 +384,9 @@ void SheetsModel::prepareGrid()
     int i = 0;
     while(i < students.length())
     {
-        QString averageString;
-        double avmCache = avMark[i];
-
-        studentsflow.addStudent(SingleStudent(i,names[i],surnames[i],plumin[i],
-                      averageString.sprintf("%6.2f", avmCache),
-                      setAva(i),isOn[i]));
+        studentsflow.addStudent(createSingle(i));
         i++;
     }
-
-
 }
 
 QString SheetsModel::setAva(int i)
@@ -557,4 +551,51 @@ void SheetsModel::updateCurrentProb()
 
     listener.isActive = true;
 
+}
+
+void SheetsModel::callStudent()
+{
+    listener.isActive = false;
+
+    //TO PREVENT 1 STUDENT CALL EVERYTIME THIS FUNCTION MUST BE REVISED
+    //IF THERE ARE NO STUDENTS TO ANSWER CASE 1, ELSE CASE 2
+
+    if (order.isEmpty()){
+        int id = coinToss(decisionList);
+        isMain[id] = !isMain[id];
+        SingleStudent bounded = createSingle(id);
+        studentsflow.addStudent(bounded);
+        emit studentSelected(id); //REVISE IS IT NEEDED?
+    }
+    else {
+        int id = coinToss(currentDecisionList);
+        isMain[id] = !isMain[id];
+        studentsflow.activeStudent(id);
+        emit studentSelected(id); //REVISE IS IT NEEDED?
+    }
+
+    listener.isActive = true;
+}
+
+int SheetsModel::coinToss(QList<double> decList)
+{
+    double toss = double(1) - xCase.generateDouble(); //BECAUSE OF [0,1) RANGE OF GENERATED NUMBER
+    qInfo() << toss;
+    qInfo() << "toss result of:";
+    int i = 0;
+    while ((toss > decList[i])&&( i < decList.count())){
+        i++;
+    }
+    qInfo() << i;
+    return i;
+}
+
+const SingleStudent SheetsModel::createSingle(int id)
+{
+    QString averageString;
+    double avmCache = avMark[id];
+
+    return SingleStudent(id,names[id],surnames[id],plumin[id],
+                  averageString.sprintf("%6.2f", avmCache),
+                  setAva(id),isOn[id],isMain[id]);
 }

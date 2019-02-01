@@ -1,6 +1,5 @@
 import QtQuick 2.12
 import QtQuick.Window 2.12
-import QtMultimedia 5.12
 
 Window {
 
@@ -19,15 +18,12 @@ Window {
     flags: Qt.FramelessWindowHint
 
     onModelsChanged: {
-        console.log("Classes got->CreatingTumbler")
         var componentst = Qt.createComponent("subjectsTumbler.qml");
         var tumblersub=componentst.createObject(window,
                                                 {"x": 200, "y": 200})
         tumblersub.model=window.models}
 
     onPopupsChanged: {
-        console.log("POPUPS CHANGED")
-
         image.visible=false
         window.width=Screen.desktopAvailableWidth
         window.height=Screen.desktopAvailableHeight
@@ -49,5 +45,4 @@ Window {
         y: image.height/4
         source: "path868white.png"
     }
-
 }
