@@ -23,11 +23,9 @@ GridView {
 
         Image {
             id: avatarImage
-            source: avatar//"file:///home/sunshine/qtprojects/smartjournal/avatar/10А/25.png"
-            width: (!isMain) ? 8*studentsGrid.cellWidth/10 : 2*studentsGrid.cellWidth
+            source: avatar
+            width: (!ismain) ? 8*studentsGrid.cellWidth/10 : 1.5*studentsGrid.cellWidth
             height: width
-
-
             Rectangle{
                 id: dataRecta
                 width: parent.width
@@ -45,7 +43,7 @@ GridView {
                     }
                     GradientStop {
                         position: 1.00;
-                        color: "#99ae00ff";
+                        color: (!ismain) ? "#99ae00ff" : "#99bbeaff";
                     }
 
                 }

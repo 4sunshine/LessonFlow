@@ -16,7 +16,7 @@ public:
         AverageRole,
         AvatarRole,
         StatusRole,
-        IsMainRole
+        IsmainRole
     };
 
     StudentsFlow(QObject *parent = nullptr);

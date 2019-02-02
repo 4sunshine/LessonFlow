@@ -52,6 +52,8 @@ QVariant StudentsFlow::data(const QModelIndex & index, int role) const {
         return myStudent.avatar();
     else if (role == StatusRole)
         return myStudent.status();
+    else if (role == IsmainRole)
+        return myStudent.ismain();
     return QVariant();
 }
 
@@ -65,7 +67,7 @@ QHash<int, QByteArray> StudentsFlow::roleNames() const {
     roles[PlusesRole] = "pluses";
     roles[AvatarRole] = "avatar";
     roles[StatusRole] = "status";
-    roles[IsMainRole] = "isMain";
+    roles[IsmainRole] = "ismain";
     return roles;
 }
 //![0]
@@ -83,11 +85,11 @@ bool StudentsFlow::setData(const QModelIndex &index, const QVariant &value, int 
                                                       local.pluses(),
                                                       local.average(),
                                                       local.avatar(),value.toBool(),
-                                                      local.isMain()));
+                                                      local.ismain()));
             emit dataChanged(index, index, {role});
             return true;
 
-        case IsMainRole:
+        case IsmainRole:
 
             m_students.replace(index.row(), SingleStudent(local.order(),local.name(),
                                                       local.surname(),
@@ -96,7 +98,7 @@ bool StudentsFlow::setData(const QModelIndex &index, const QVariant &value, int 
                                                       local.avatar(),local.status(),
                                                       value.toBool()));
             qInfo() << "MAIN CHANGED";
-            qInfo() << m_students[0].isMain();
+            qInfo() << m_students[0].ismain();
             emit dataChanged(index, index, {role});
             return true;
 
@@ -121,7 +123,7 @@ void StudentsFlow::setIsOn(int i)
 
 void StudentsFlow::setMain()
 {
-    setData(this->index(0), true, IsMainRole);
+    setData(this->index(0), true, IsmainRole);
 }
 
 void StudentsFlow::removeAll()

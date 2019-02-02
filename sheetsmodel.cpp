@@ -592,6 +592,7 @@ void SheetsModel::callStudent()
         isMain[id] = !isMain[id];
         SingleStudent bounded = createSingle(id);
         studentsflow.addStudent(bounded);
+        studentsflow.setMain();
         emit studentSelected(id); //REVISE IS IT NEEDED?
     }
     else {

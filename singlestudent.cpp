@@ -3,10 +3,10 @@
 SingleStudent::SingleStudent(const int &order, const QString &name, const QString &surname,
                              const QString &pluses, const QString &average,
                              const QString &avatarName, const bool &status,
-                             const bool &isMain):
+                             const bool &ismain):
     m_order(order),
      m_name(name), m_surname(surname), m_pluses(pluses), m_average(average),
-      m_avatarName(avatarName), m_status(status), m_isMain(isMain)
+      m_avatarName(avatarName), m_status(status), m_ismain(ismain)
 {
 }
 
@@ -45,7 +45,7 @@ int SingleStudent::order() const
     return m_order;
 }
 
-bool SingleStudent::isMain() const
+bool SingleStudent::ismain() const
 {
-    return m_isMain;
+    return m_ismain;
 }
