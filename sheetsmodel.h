@@ -2,7 +2,7 @@
 #define SHEETSMODEL_H
 
 #include <QMediaPlayer>
-#include <QRandomGenerator>
+#include <QRandomGenerator64>
 #include "googlewrapper.h"
 #include "listener.h"
 #include "studentsflow.h"
@@ -33,7 +33,7 @@ private:
     QBuffer audioStream; //BUFFER TO PLAY
     QByteArray bytesOfSound; //AUDIO DATA
 
-    QRandomGenerator xCase;
+    QRandomGenerator64 xCase;
     QList<ClassList*> classNames; //LIST OF STRUCTURES CLASSLIST
     QStringList columnIndexes; //LIST OF COLUMN INDEXES
     QStringList classesRepresent; //LIST OF SUBJS&CLASSES FOR INTERFACE
@@ -58,17 +58,19 @@ private:
     QStringList plumin; //PLUSES AND MINUSES
     QString curClass; //CURRENT CLASS
     QString curCol; //CURRENT COLUMN INDEX
-    QList<QStringList*> mksAtd; //LIST OF MARKS
+    QList<QStringList*> mksAtd; //LIST OF MARKS AND ATTENDANCE (SHEETS DATA)
     QString sheetId; //ID OF DATA SHEET
+    QString pmColumn; // COLUMN OF PLUSES AND MINUSES IN SHEETS
     bool isLessonStarted = false;
 
-    int dataSize;
+    int dataSize; //DATA LENGTH FOR SINGLE STUDENT SINCE THE BEGINNING OF SEMESTER
 
     const QStringList months = {"Январь","Февраль","Март","Апрель",
                                 "Май","Июнь","Июль","Август",
                                     "Сентябрь","Октябрь","Ноябрь","Декабрь"};
     const QString stMA = "D7"; //ADRESS OF STARTING MONTH
     const QString stDA = "D8"; //ADRESS OF STARTING DATE
+    const int startId = 11; //START RAW NUMBER OF DATA
 
     void colInd();   //SHEET COLUMN INDEXES
     void makeClassesRepresent(); //Prepare list of subjects & classes
@@ -77,7 +79,10 @@ private:
     void googleSay(QString phrase); //MAKE SPEECH
     void prepareGrid();
     void callStudent(); //MAKE A DECISION FROM PROBABIBILITIES LIST
-    void getDates(int lessonNumber);
+    void getDates(int lessonNumber); //LESSON NUMBER 0 - NOT AT DATE, 1 - 1st LESSON, 2 - 2nd etc
+    void addPM(QString plusmin); //ADD PLUS OR MINUS
+    void updatePM(int id); //UPDATE STUDENT'S +- IN SHEETS
+    void markUpdate(int mark, int id); //MARK TO STUDENT WITH ID
 
     int coinToss(QList<double>); //RETURN STUDENT'S ID TO ASK FROM DECISION LIST
 

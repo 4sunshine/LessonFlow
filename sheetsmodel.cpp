@@ -10,8 +10,6 @@ SheetsModel::SheetsModel(QObject *parent) : QObject(parent),
     connect(&listener, &Listener::buttonEvent, this, &SheetsModel::btnHandler);
     connect(&listener, &Listener::irSignal, this, &SheetsModel::irHandler);
 //    connect(this,&SheetsModel::audioReady,this,&SheetsModel::playAudio);
-
-    xCase.seed();
 }
 
 void SheetsModel::grant()
@@ -130,7 +128,10 @@ void SheetsModel::getDates(int lessonNum)
         else if (datMo[datMo.size()-1][0].toString() == "PLUMIN")
         {
             qInfo()<<"getplumines";
+
             auto reply3 = googlewrapper.getPM(columnIndexes[datMo.count()+2]); //SEE SHEET STRUCTURE
+
+            pmColumn = columnIndexes[datMo.count()+2]; //INITIALISE +- COLUMN
 
             connect(reply3, &QNetworkReply::finished, [=]() {
                 if (reply3->error() != QNetworkReply::NoError) {
@@ -224,7 +225,7 @@ void SheetsModel::downloadData()
                 attend << float(100)*float(dataSize-sdays)/float(dataSize);
 
                 QStringList* locD = new QStringList(locData);
-                mksAtd << locD;
+                mksAtd << locD; //MARKS AND ATTENDANCE
 
                 probability << double(0); //INITIALIZE PROBABILITIES LISTS
                 decisionList << double(0);
@@ -232,19 +233,19 @@ void SheetsModel::downloadData()
                 currentDecisionList << double(0);
 
             }
-            qInfo()<<attend;
-            qInfo()<<avMark;
-            qInfo()<<studDays;
-            qInfo()<<mksCount;
+//            qInfo()<<attend;
+//            qInfo()<<avMark;
+//            qInfo()<<studDays;
+//            qInfo()<<mksCount;
 
 
             prepareGrid(); //PREPARE GRID AT START
             listener.isActive = true; //start receive data from server
-            qInfo()<< "LISTENER STATUS:";
-            qInfo()<< listener.isActive;
+//            qInfo()<< "LISTENER STATUS:";
+//            qInfo()<< listener.isActive;
             emit gridPrepared();
 //*******************************************************************
-            googleSay("Привет, ребята! Отметьтесь на уроке");
+//            googleSay("Привет, ребята! Отметьтесь на уроке");
 
             emit dataGot("popups",students);//STUDENTS COMPLETED SIGNAL
 
@@ -293,7 +294,7 @@ void SheetsModel::btnHandler(int btnId)
        }
 
     }
-
+    /*BUTTON EVENTS DURING LESSON*/
     if (isLessonStarted && isOn[btnId-1]) {
         isActive[btnId-1] = !isActive[btnId-1];
         if (isActive[btnId-1])
@@ -323,17 +324,25 @@ void SheetsModel::btnHandler(int btnId)
 
 void SheetsModel::irHandler(int irCode)
 {
+    int mcount = isMain.count(true); //COUNT OF MAIN STUDENTS
+    int mId = isMain.indexOf(true); //INDEX OF MAIN STUDENT
     switch (irCode) {
         case UP:
+            if (isLessonStarted)
+                callStudent();
 
             break;
         case DOWN:
 
             break;
         case RIGHT:
+            if (isLessonStarted && (mcount > 0))
+                addPM("+");
 
             break;
         case LEFT:
+            if (isLessonStarted && (mcount > 0))
+                addPM("-");
 
             break;
         case OK:
@@ -345,23 +354,36 @@ void SheetsModel::irHandler(int irCode)
                 qInfo() << probability;
                 qInfo() << decisionList;
             }
-            else {
-                callStudent();
+            else if ( mcount > 0 ) {
+                qInfo() << "LESSON IS STARTED";
+
+                updatePM(mId);
+                studentsflow.removeStudent(mId);
+                isMain[mId] = false;
             }
 
             break;
         case TWO:
+            if (isLessonStarted && (mcount > 0))
+                markUpdate(2, mId);
 
             break;
         case THREE:
+            if (isLessonStarted && (mcount > 0))
+                markUpdate(3, mId);
 
             break;
         case FOUR:
+            if (isLessonStarted && (mcount > 0))
+                markUpdate(4, mId);
 
             break;
         case FIVE:
+            if (isLessonStarted && (mcount > 0))
+                markUpdate(5, mId);
 
             break;
+
         default:
             break;
     }
@@ -576,6 +598,7 @@ void SheetsModel::callStudent()
         int id = coinToss(currentDecisionList);
         googleSay("Отвечает "+names[id]+" "+surnames[id]);
         isMain[id] = !isMain[id];
+        order.removeAt(order.indexOf(id));
         studentsflow.activeStudent(id);
         emit studentSelected(id); //REVISE IS IT NEEDED?
     }
@@ -604,4 +627,64 @@ const SingleStudent SheetsModel::createSingle(int id)
     return SingleStudent(id,names[id],surnames[id],plumin[id],
                   averageString.sprintf("%6.2f", avmCache),
                   setAva(id),isOn[id],isMain[id]);
+}
+
+void SheetsModel::addPM(QString plusmin)
+{
+    int id = isMain.indexOf(true); //ID OF CURRENTLY MAIN STUDENT
+    plumin[id] += plusmin;
+    if ( plumin[id].count() == 3 ) {
+        int pcount = plumin[id].count("+"); //COUNT OF PLUSES IN STRING
+        switch (pcount) {
+        case 3:
+            markUpdate(5, id);
+            plumin[id]="";
+            break;
+        case 2:
+            markUpdate(4, id);
+            plumin[id]="";
+            break;
+        case 1:
+            markUpdate(3, id);
+            plumin[id]="";
+            break;
+        case 0:
+            markUpdate(2, id);
+            plumin[id]="";
+            break;
+        default:
+            break;
+        }
+    }
+}
+
+void SheetsModel::markUpdate(int mark, int id)
+{
+    avMark[id] = (avMark[id]*mksCount[id]+double(mark))/double(mksCount[id] + 1);
+    mksCount[id]++;
+    googleSay(" "+names[id]+" получает "+QString::number(mark));
+    int lastfree = mksAtd[id]->lastIndexOf(""); //LAST INDEX WITH FREE VALUE
+    (*mksAtd[id])[lastfree] = QString::number(mark);
+
+    auto updateReply = googlewrapper.updateSheet(QString::number(mark),
+                                                 columnIndexes[lastfree+3], startId+id);
+    connect(updateReply, &QNetworkReply::finished, [=]() {
+        if (updateReply->error() != QNetworkReply::NoError) {
+            emit error(updateReply->errorString());
+            qInfo()<<updateReply->errorString();
+            return;
+        }
+    });
+}
+
+void SheetsModel::updatePM(int id)
+{
+    auto updateReply = googlewrapper.updateSheet(plumin[id], pmColumn, id+startId);
+    connect(updateReply, &QNetworkReply::finished, [=]() {
+        if (updateReply->error() != QNetworkReply::NoError) {
+            emit error(updateReply->errorString());
+            qInfo()<<updateReply->errorString();
+            return;
+        }
+    });
 }
