@@ -3,17 +3,26 @@ import QtQuick 2.11
 GridView {
     visible: true
     id: studentsGrid
-    x: parent.width-40; y: parent.height-5;
-    width: 9.5*parent.width/10
-    height: 9.5*parent.height/10
-    cellWidth: width/7 //7
-    cellHeight: height/5 //5
+//    x: parent.width-40
+//    y: parent.height-5
+    width: parent.width
+    height: parent.height
+//    cellWidth: width/7 //7
+    cellHeight: cellWidth //5
     flow: GridView.FlowLeftToRight
     verticalLayoutDirection: GridView.BottomToTop
+
+    onCountChanged: {
+        console.log(studflowModel.rowCount());
+        window.nstudents(studflowModel.rowCount())
+    }
+
     layoutDirection: GridView.RightToLeft
+
     removeDisplaced: Transition {
         NumberAnimation { properties: "x,y"; duration: 200 }
     }
+
     delegate:
 
         Column{
@@ -24,12 +33,12 @@ GridView {
         Image {
             id: avatarImage
             source: avatar
-            width: (!ismain) ? 8*studentsGrid.cellWidth/10 : 1.5*studentsGrid.cellWidth
+            width: 8*studentsGrid.cellWidth/10
             height: width
             Rectangle{
                 id: dataRecta
-                width: parent.width
-                height: 2.5*parent.height/10
+                width: avatarImage.width
+                height: 2.5*avatarImage.height/10
                 anchors.bottom: avatarImage.bottom
                 color: "#ffffffff"
                 radius: 5
@@ -43,7 +52,7 @@ GridView {
                     }
                     GradientStop {
                         position: 1.00;
-                        color: (!ismain) ? "#99ae00ff" : "#99bbeaff";
+                        color: (!ismain) ? "#99ae00ff" : "#99bbea00";
                     }
 
                 }

@@ -44,7 +44,7 @@ void SheetsModel::getclasses()
 
 void SheetsModel::colInd()
 {
-    //COLUMN AA INDEXES CREATION
+    //COLUMN AA INDEXES CREATION. 26 ALPHABET LETTERS. 65 - START POSITION IN ASCII
     QStringList addr = {};
     for(int i=0; i<=100; i++){
         QString str2 = QByteArray::fromHex(QString::number(65+(i%26),16).toLocal8Bit());
@@ -56,7 +56,7 @@ void SheetsModel::colInd()
             addr<<str1+str2;
         }
     }
-    this->columnIndexes = addr;
+    columnIndexes = addr;
 }
 
 void SheetsModel::makeClassesRepresent()
@@ -90,11 +90,15 @@ void SheetsModel::classSelected(int classId, int lessonNum)
                 sex << getSex(names[i]); //SETTING SEX
             }
         googlewrapper.studCount = students.length();
+
+        emit gotCount(googlewrapper.studCount); //EMIT THIS TO SET OPTIMAL SIZE OF CELLS
+/*
         qInfo()<<students.length();
         qInfo()<<students;
         qInfo()<<sex;
         qInfo()<<names;
         qInfo()<<lessonNum;
+*/
         getDates(lessonNum);
     });
 }

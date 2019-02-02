@@ -9,7 +9,6 @@ Column{
     signal selectedSubj(int subjId, int lsnNum);//SELECTED SUBJECT ID + LESSON NUMBER
     onSelectedSubj: {
         window.subjectSelected(subjectId, lessonNum)
-        console.log(lessonNum)
     }
 
     Text{

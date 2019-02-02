@@ -21,8 +21,8 @@ class SheetsModel : public QObject
 
 public:
     explicit SheetsModel(QObject *parent = nullptr);
-    StudentsFlow studentsflow;
 
+    StudentsFlow studentsflow;
 
 private:
 
@@ -122,6 +122,7 @@ private slots:
 signals:
     void error(const QString &errorString);
     void dataGot(QString, QStringList);//EMIT WHEN CLASSES GOT OR STUDENTS COMPLETED!!!
+    void gotCount(int studentsCount); // EMIT WHEN GOT COUNT OF STUDENTS
     void gridPrepared();
 //    void audioReady();
     void studentSelected(int studentId);
