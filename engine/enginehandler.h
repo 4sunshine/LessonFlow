@@ -4,7 +4,11 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 
+<<<<<<< HEAD:engine/enginehandler.h
 #include "dataflow/sheetsmodel.h"
+=======
+#include "sheetsmodel.h"
+>>>>>>> b83d31d... Visual behaviour improved:enginehandler.h
 
 class EngineHandler : public QObject
 {
