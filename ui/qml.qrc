@@ -1,9 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>main.qml</file>
-        <file>graphics/path868white.png</file>
-        <file>widgets/subjectsTumbler.qml</file>
-        <file>widgets/viewStudents.qml</file>
-        <file>widgets/lessonNumber.qml</file>
-    </qresource>
-</RCC>
