@@ -237,22 +237,14 @@ void SheetsModel::downloadData()
                 currentDecisionList << double(0);
 
             }
-//            qInfo()<<attend;
-//            qInfo()<<avMark;
-//            qInfo()<<studDays;
-//            qInfo()<<mksCount;
-
 
             prepareGrid(); //PREPARE GRID AT START
             listener.isActive = true; //start receive data from server
-//            qInfo()<< "LISTENER STATUS:";
-//            qInfo()<< listener.isActive;
             emit gridPrepared();
 //*******************************************************************
             googleSay("Привет, ребята! Отметьтесь на уроке");
 
             emit dataGot("popups",students);//STUDENTS COMPLETED SIGNAL
-
 
         });
 }
@@ -298,26 +290,29 @@ void SheetsModel::btnHandler(int btnId)
        }
 
     }
+
     /*BUTTON EVENTS DURING LESSON*/
-    if (isLessonStarted && isOn[btnId-1]) {
+    if (isLessonStarted && isOn[btnId-1] && !grading) {
         isActive[btnId-1] = !isActive[btnId-1];
         if (isActive[btnId-1])
         {
-            qInfo() << "CREATE NEW STUDENTS";
             studentsflow.addStudent(createSingle(btnId-1));// IS MAIN FALSE PERMANENTLY
             order << btnId-1;
             updateCurrentProb();
-            qInfo() << currentProbability;
-            qInfo() << currentDecisionList;
-            qInfo() << order;
         }
         else {
             order.removeAt(order.indexOf(btnId-1));
-            studentsflow.removeStudent(btnId-1);
             updateCurrentProb();
-            qInfo() << currentProbability;
-            qInfo() << currentDecisionList;
-            qInfo() << order;
+
+            if(!isMain[btnId-1]){
+                studentsflow.removeStudent(btnId-1);
+            }
+            else {
+                grading = true;
+                gradeId = btnId-1;
+                // SOUND OR NOTIFICATION OF +- OR MARK NECESSITY
+            }
+
         }
 
     }
@@ -329,24 +324,40 @@ void SheetsModel::btnHandler(int btnId)
 void SheetsModel::irHandler(int irCode)
 {
     int mcount = isMain.count(true); //COUNT OF MAIN STUDENTS
-    int mId = isMain.indexOf(true); //INDEX OF MAIN STUDENT
+
+    int mId; //ID OF CURRENTLY GRADING STUDENT
+
+    if (gradeId == 99){
+        mId = isMain.indexOf(true);
+    }
+    else {
+        mId = gradeId;
+    }
+
     switch (irCode) {
         case UP:
             if (isLessonStarted)
                 callStudent();
 
             break;
-        case DOWN:
+        case DOWN: // END OF GRADING
+            if (mcount > 0){
+                updatePM(mId);
+                studentsflow.removeStudent(mId);
+                isMain[mId] = false;
+                gradeId = 99;
+                grading = false;
+            }
 
             break;
         case RIGHT:
             if (isLessonStarted && (mcount > 0))
-                addPM("+");
+                addPM("+", mId);
 
             break;
         case LEFT:
             if (isLessonStarted && (mcount > 0))
-                addPM("-");
+                addPM("-", mId);
 
             break;
         case OK:
@@ -360,10 +371,6 @@ void SheetsModel::irHandler(int irCode)
             }
             else if ( mcount > 0 ) {
                 qInfo() << "LESSON IS STARTED";
-
-                updatePM(mId);
-                studentsflow.removeStudent(mId);
-                isMain[mId] = false;
             }
 
             break;
@@ -634,9 +641,8 @@ const SingleStudent SheetsModel::createSingle(int id)
                   setAva(id),isOn[id],isMain[id]);
 }
 
-void SheetsModel::addPM(QString plusmin)
+void SheetsModel::addPM(QString plusmin, int id)
 {
-    int id = isMain.indexOf(true); //ID OF CURRENTLY MAIN STUDENT
     plumin[id] += plusmin;
     if ( plumin[id].count() == 3 ) {
         int pcount = plumin[id].count("+"); //COUNT OF PLUSES IN STRING

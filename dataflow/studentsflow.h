@@ -31,15 +31,17 @@ public:
 
     bool setData(const QModelIndex & index, const QVariant &value, int role);
 
-    void changeValue(int i);
-
     void setIsOn(int i);
 
     void removeAll();
 // DISCUSSION MODE MUST BE IMPLEMENTED WHEN SEVERAL STUDENTS ARE ACTIVE
     void activeStudent(int id);
 
-    void setMain();
+    void setMain(int id);
+
+    void setPM(QString plumin);
+
+    int findById(int id); // RETURNS INDEX POSITION OF STUDENT WITH ID
 
 protected:
     QHash<int, QByteArray> roleNames() const;

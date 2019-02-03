@@ -15,13 +15,9 @@ void StudentsFlow::addStudent(const SingleStudent &myStudent)
 
 void StudentsFlow::removeStudent(const int ind)
 {
-    int i = 0;
-    while((m_students[i].order() != ind) && (i < rowCount()))
-    {
-        i++;
-    }
+    int i = findById(ind);
 
-    if (i < rowCount())
+    if (i >= 0)
     {
         beginRemoveRows(QModelIndex(),i,i);
         m_students.removeAt(i);
@@ -78,6 +74,7 @@ bool StudentsFlow::setData(const QModelIndex &index, const QVariant &value, int 
     {
         SingleStudent local = m_students[index.row()];
         switch (role) {
+
         case StatusRole:
 
             m_students.replace(index.row(), SingleStudent(local.order(),local.name(),
@@ -97,8 +94,28 @@ bool StudentsFlow::setData(const QModelIndex &index, const QVariant &value, int 
                                                       local.average(),
                                                       local.avatar(),local.status(),
                                                       value.toBool()));
-            qInfo() << "MAIN CHANGED";
-            qInfo() << m_students[0].ismain();
+            emit dataChanged(index, index, {role});
+            return true;
+
+        case PlusesRole:
+
+            m_students.replace(index.row(), SingleStudent(local.order(),local.name(),
+                                                          local.surname(),
+                                                          value.toString(),
+                                                          local.average(),
+                                                          local.avatar(),local.status(),
+                                                          local.ismain()));
+            emit dataChanged(index, index, {role});
+            return  true;
+
+        case AverageRole:
+
+            m_students.replace(index.row(), SingleStudent(local.order(),local.name(),
+                                                          local.surname(),
+                                                          local.pluses(),
+                                                          value.toString(),
+                                                          local.avatar(),local.status(),
+                                                          local.ismain()));
             emit dataChanged(index, index, {role});
             return true;
 
@@ -109,21 +126,17 @@ bool StudentsFlow::setData(const QModelIndex &index, const QVariant &value, int 
     return false;
 }
 
-void StudentsFlow::changeValue(int i)
-{
-
-    setData(this->index(i), true, StatusRole);
-
-}
-
 void StudentsFlow::setIsOn(int i)
 {
-    setData(this->index(i), true, StatusRole);
+    if (( i >= 0 ) && ( i < rowCount() ))
+        setData(this->index(i), true, StatusRole);
 }
 
-void StudentsFlow::setMain()
+void StudentsFlow::setMain(int id)
 {
-    setData(this->index(0), true, IsmainRole);
+    int i = findById(id);
+    if (i >= 0)
+        setData(this->index(i), true, IsmainRole);
 }
 
 void StudentsFlow::removeAll()
@@ -135,6 +148,11 @@ void StudentsFlow::removeAll()
         endRemoveRows();
         i--;
     }
+}
+
+void StudentsFlow::setPM(QString plumin)
+{
+    qInfo()<<plumin;
 }
 
 void StudentsFlow::activeStudent(int id)
@@ -152,5 +170,20 @@ void StudentsFlow::activeStudent(int id)
         i--;
     }
     qInfo() << "SET MAIN";
-    setMain();
+    setMain(id);
+}
+
+int StudentsFlow::findById(int id)
+{
+    int i = 0;
+    while((m_students[i].order() != id) && (i < rowCount()))
+    {
+        i++;
+    }
+
+    if ( i == rowCount() )
+        return -1;
+    else {
+        return i;
+    }
 }

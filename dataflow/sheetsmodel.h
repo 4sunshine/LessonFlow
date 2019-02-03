@@ -61,7 +61,11 @@ private:
     QList<QStringList*> mksAtd; //LIST OF MARKS AND ATTENDANCE (SHEETS DATA)
     QString sheetId; //ID OF DATA SHEET
     QString pmColumn; // COLUMN OF PLUSES AND MINUSES IN SHEETS
+
     bool isLessonStarted = false;
+    bool grading = false; // TRUE IF TEACHER GRADING MAIN STUDENT
+    int gradeId = 99; // ID OF STUDENT TO GET MARK/PM
+    // IF THERE IS ONLY ONE MAIN STUDENT GRADE ID = 99
 
     int dataSize; //DATA LENGTH FOR SINGLE STUDENT SINCE THE BEGINNING OF SEMESTER
 
@@ -80,7 +84,7 @@ private:
     void prepareGrid();
     void callStudent(); //MAKE A DECISION FROM PROBABIBILITIES LIST
     void getDates(int lessonNumber); //LESSON NUMBER 0 - NOT AT DATE, 1 - 1st LESSON, 2 - 2nd etc
-    void addPM(QString plusmin); //ADD PLUS OR MINUS
+    void addPM(QString plusmin, int id); //ADD PLUS OR MINUS
     void updatePM(int id); //UPDATE STUDENT'S +- IN SHEETS
     void markUpdate(int mark, int id); //MARK TO STUDENT WITH ID
 
