@@ -1,13 +1,7 @@
 #include <QGuiApplication>
 #include <QScreen>
 
-<<<<<<< HEAD
 #include "engine/enginehandler.h"
-
-=======
-#include "enginehandler.h"
->>>>>>> b83d31d... Visual behaviour improved
-
 
 int main(int argc, char *argv[])
 {

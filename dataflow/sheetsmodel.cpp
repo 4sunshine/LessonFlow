@@ -249,7 +249,7 @@ void SheetsModel::downloadData()
 //            qInfo()<< listener.isActive;
             emit gridPrepared();
 //*******************************************************************
-//            googleSay("Привет, ребята! Отметьтесь на уроке");
+            googleSay("Привет, ребята! Отметьтесь на уроке");
 
             emit dataGot("popups",students);//STUDENTS COMPLETED SIGNAL
 

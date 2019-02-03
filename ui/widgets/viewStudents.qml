@@ -3,18 +3,9 @@ import QtQuick 2.11
 GridView {
     visible: true
     id: studentsGrid
-<<<<<<< HEAD:ui/widgets/viewStudents.qml
     width: parent.width
     height: parent.height
     cellHeight: cellWidth
-=======
-//    x: parent.width-40
-//    y: parent.height-5
-    width: parent.width
-    height: parent.height
-//    cellWidth: width/7 //7
-    cellHeight: cellWidth //5
->>>>>>> b83d31d... Visual behaviour improved:viewStudents.qml
     flow: GridView.FlowLeftToRight
     verticalLayoutDirection: GridView.BottomToTop
 
