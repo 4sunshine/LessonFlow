@@ -1,11 +1,9 @@
 <RCC>
     <qresource prefix="/">
-        <file>main.qml</file>
-        <file>path868white.png</file>
-        <file>secret_google.json</file>
-        <file>subandclas</file>
-        <file>subjectsTumbler.qml</file>
-        <file>viewStudents.qml</file>
-        <file>lessonNumber.qml</file>
+        <file>ui/widgets/subjectsTumbler.qml</file>
+        <file>ui/widgets/viewStudents.qml</file>
+        <file>ui/widgets/lessonNumber.qml</file>
+        <file>ui/main.qml</file>
+        <file>ui/graphics/path868white.png</file>
     </qresource>
 </RCC>
