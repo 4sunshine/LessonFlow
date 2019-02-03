@@ -19,7 +19,7 @@ Tumbler {
              selection.focus = false
              subjectsTumbler.visible = false
              subjectsTumbler.enabled = false
-             var newSpin = Qt.createComponent("lessonNumber.qml");
+             var newSpin = Qt.createComponent("qrc:/ui/widgets/lessonNumber.qml");
              var lessonNum=newSpin.createObject(window)
             }
          }

@@ -3,8 +3,8 @@
 
 #include <QMediaPlayer>
 #include <QRandomGenerator64>
-#include "googlewrapper.h"
-#include "listener.h"
+#include "api/googlewrapper.h"
+#include "server/listener.h"
 #include "studentsflow.h"
 
 

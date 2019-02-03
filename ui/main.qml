@@ -39,7 +39,7 @@ Window {
 
     onModelsChanged: {
 
-        var componentst = Qt.createComponent("subjectsTumbler.qml");
+        var componentst = Qt.createComponent("qrc:/ui/widgets/subjectsTumbler.qml");
         var tumblersub=componentst.createObject(window,
                                                 {"x": 200, "y": 200})
         tumblersub.model=window.models}
@@ -52,7 +52,7 @@ Window {
         x:0
         y:0
 
-        var componentst = Qt.createComponent("viewStudents.qml");
+        var componentst = Qt.createComponent("qrc:/ui/widgets/viewStudents.qml");
         var studFlowView=componentst.createObject(window,
                                                 {"x": 0, "y": 0,
                                                   "cellWidth": optWidth})
@@ -65,6 +65,6 @@ Window {
         height: image.width
         x: (parent.width-image.width)/2
         y: image.height/4
-        source: "path868white.png"
+        source: "qrc:/ui/graphics/path868white.png"
     }
 }

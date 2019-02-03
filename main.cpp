@@ -1,7 +1,7 @@
 #include <QGuiApplication>
 #include <QScreen>
 
-#include "enginehandler.h"
+#include "engine/enginehandler.h"
 
 
 int main(int argc, char *argv[])

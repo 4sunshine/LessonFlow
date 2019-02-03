@@ -3,12 +3,9 @@ import QtQuick 2.11
 GridView {
     visible: true
     id: studentsGrid
-//    x: parent.width-40
-//    y: parent.height-5
     width: parent.width
     height: parent.height
-//    cellWidth: width/7 //7
-    cellHeight: cellWidth //5
+    cellHeight: cellWidth
     flow: GridView.FlowLeftToRight
     verticalLayoutDirection: GridView.BottomToTop
 
@@ -87,24 +84,18 @@ GridView {
                                 color: "#ffffffff"
                                 }
 
-
-
-
-                    Text{
-                        id: avmarkText
-                        text: average
-                        font.bold: true
-                        font.pointSize: 15
-                        color: "#ffffffff"
-                        anchors.rightMargin: 5
-
-                    }
+                            Text{
+                                id: avmarkText
+                                text: average
+                                font.bold: true
+                                font.pointSize: 15
+                                color: "#ffffffff"
+                                anchors.rightMargin: 5
+                            }
                     }
                 }
             }
         }
-
     }
-
 }
 
