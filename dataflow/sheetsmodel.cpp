@@ -10,6 +10,7 @@ SheetsModel::SheetsModel(QObject *parent) : QObject(parent),
     connect(&listener, &Listener::buttonEvent, this, &SheetsModel::btnHandler);
     connect(&listener, &Listener::irSignal, this, &SheetsModel::irHandler);
 //    connect(this,&SheetsModel::audioReady,this,&SheetsModel::playAudio);
+    xCase.seed(uint32_t(QDateTime::currentMSecsSinceEpoch()));
 }
 
 void SheetsModel::grant()
@@ -268,7 +269,7 @@ QString SheetsModel::getSex(QString name)
 void SheetsModel::btnHandler(int btnId)
 {
     listener.isActive = false;
-    if (btnId > students.length()) //CHECK IF ID <= LENGTH OF STUDENTS
+    if ((btnId > students.length())|| (btnId <= 0) ) //CHECK IF ID <= LENGTH OF STUDENTS
         return;
 
     /*STARTING CHECK OF STUDENTS STATUS*/
@@ -715,5 +716,29 @@ void SheetsModel::updatePM(int id)
 
 void SheetsModel::absent()
 {
+    QStringList offStudents;
+    for (int i = 0; i < students.length(); i++) {
+        if (!isOn[i])
+            (*mksAtd[i]).last() = QString(u8"п"); // BY DEFAULT "п"
+
+        offStudents << (*mksAtd[i]).last();
+    }
+
+    auto updateReply = googlewrapper.updateSheet(offStudents, curCol);
+    connect(updateReply, &QNetworkReply::finished, [=]() {
+        if (updateReply->error() != QNetworkReply::NoError) {
+            emit error(updateReply->errorString());
+            qInfo()<<updateReply->errorString();
+            qInfo() << "ABSENT ERROR";
+            return;
+        }
+        else {
+            qInfo() << "ABSENT SUCCESS";
+            return;
+        }
+    });
+
+
+
     qInfo() << "METHOD MUST BE IMPLEMENTED";
 }

@@ -75,6 +75,19 @@ void setup() {
   digitalWrite(GRNLED,LOW);
 }
 
+/*
+on  NRF Interrupt espSend
+
+on IR before espSend -> noInterrupts?
+after interrupts; 
+
+IR command to restart esp;
+
+
+*/
+
+
+
 void loop() {
   byte data[2];
   while(!Mirf.dataReady()){

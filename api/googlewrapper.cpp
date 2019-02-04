@@ -98,7 +98,7 @@ QNetworkReply *GoogleWrapper::downloadData()
 
 QNetworkReply *GoogleWrapper::getPM(QString col)
 {
-    QString reqUrl = gHeader+sheetId+"/values/"+col+"11%3A"+col+"40?majorDimension=ROWS";
+    QString reqUrl = gHeader+sheetId+values+col+"11%3A"+col+"40?majorDimension=ROWS";
     qDebug() << "Getting +-"+reqUrl;
     return oauth2.get(reqUrl);
 }
@@ -108,7 +108,7 @@ QNetworkReply *GoogleWrapper::updateSheet(QString data, QString col, int row)
     QString toWrite = "{\"values\":[[\""+data+"\"]]}"; //JSON FORMATTED DATA TO WRITE
 
     QNetworkRequest reqq; //SETTING REQUEST PARAMETERS
-    reqq.setUrl(QUrl(gHeader+sheetId+"/values/"+col+
+    reqq.setUrl(QUrl(gHeader+sheetId+values+col+
                      QString::number(row)+"%3A"+col+QString::number(row)+"?valueInputOption=RAW"));
 
     reqq.setRawHeader(QString("Authorization").toLocal8Bit(),
@@ -118,6 +118,35 @@ QNetworkReply *GoogleWrapper::updateSheet(QString data, QString col, int row)
     qInfo()<<reqq.url();
 
     return oauth2.networkAccessManager()->put(reqq,toWrite.toLocal8Bit());
+}
+
+QNetworkReply *GoogleWrapper::updateSheet(QStringList data, QString col)
+{
+    int dataSize = data.length();
+    QNetworkRequest reqq;
+    reqq.setUrl(QUrl(gHeader+sheetId+values+col+
+                     QString::number(initRaw)+"%3A"+col+
+                     QString::number(initRaw+dataSize-1)+"?valueInputOption=RAW"));
+    reqq.setRawHeader(QString("Authorization").toLocal8Bit(),
+                      ("Bearer "+oauth2.token()).toLocal8Bit());
+    reqq.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+    QJsonObject subjson;
+
+    QString range = col+QString::number(initRaw)+":"+
+            col+QString::number(initRaw+dataSize-1);
+
+    QJsonArray jsonData = QJsonArray::fromStringList(data);
+
+    QJsonObject json
+    {
+        {"majorDimension", "ROWS"},
+        {"range", range},
+        {"values", jsonData}
+    };
+
+    return oauth2.networkAccessManager()->put(reqq, QJsonDocument(json).toJson());
+
 }
 
 QNetworkReply *GoogleWrapper::speechGet(QString text)

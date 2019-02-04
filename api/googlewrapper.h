@@ -21,7 +21,8 @@ public:
     QNetworkReply *getClassesList();
     QNetworkReply *getDateList();
     QNetworkReply *downloadData();
-    QNetworkReply *updateSheet(QString data, QString col, int row);//UPDATE SHEETS WITH DATA
+    QNetworkReply *updateSheet(QString data, QString col, int row); //UPDATE SHEETS WITH DATA
+    QNetworkReply *updateSheet(QStringList data, QString col); //UPDATE COLUMN
     QNetworkReply *getPM(QString col);//GET PLUSES AND MINUSES
     QNetworkReply *speechGet(QString text);
 
@@ -40,6 +41,8 @@ public slots:
 
 private:
     QOAuth2AuthorizationCodeFlow oauth2;
+    const QString values = "/values/"; // VALUES KEYWORD IN SHEETS API
+    const int initRaw = 11; //INITIAL RAW OF STUDENTS DATA IN SHEETS
     const QString gHeader = "https://sheets.googleapis.com/v4/spreadsheets/"; //COMMON HEADER OF SHEET REQUESTS
     const QString cloudHeader = "https://texttospeech.googleapis.com/v1beta1/text:synthesize"; //GOOGLE CLOUD HEADER
 };
