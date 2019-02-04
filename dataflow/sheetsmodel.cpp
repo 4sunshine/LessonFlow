@@ -269,8 +269,10 @@ QString SheetsModel::getSex(QString name)
 void SheetsModel::btnHandler(int btnId)
 {
     listener.isActive = false;
-    if ((btnId > students.length())|| (btnId <= 0) ) //CHECK IF ID <= LENGTH OF STUDENTS
+    if ((btnId > students.length()) || (btnId <= 0) ) { //CHECK IF ID <= LENGTH OF STUDENTS
+        listener.isActive = true;
         return;
+    }
 
     /*STARTING CHECK OF STUDENTS STATUS*/
 
@@ -716,7 +718,7 @@ void SheetsModel::updatePM(int id)
 
 void SheetsModel::absent()
 {
-    QStringList offStudents;
+    QStringList offStudents; // ABSENT STUDENTS LIST
     for (int i = 0; i < students.length(); i++) {
         if (!isOn[i])
             (*mksAtd[i]).last() = QString(u8"п"); // BY DEFAULT "п"
@@ -728,17 +730,7 @@ void SheetsModel::absent()
     connect(updateReply, &QNetworkReply::finished, [=]() {
         if (updateReply->error() != QNetworkReply::NoError) {
             emit error(updateReply->errorString());
-            qInfo()<<updateReply->errorString();
-            qInfo() << "ABSENT ERROR";
-            return;
-        }
-        else {
-            qInfo() << "ABSENT SUCCESS";
             return;
         }
     });
-
-
-
-    qInfo() << "METHOD MUST BE IMPLEMENTED";
 }
