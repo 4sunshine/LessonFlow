@@ -31,6 +31,8 @@ while True:
 		data = '0xFF22DD'
 	elif data == "d":
 		data = '0xFFA857'
+	elif data == "i1":
+		data = '0xFF6897'
 	elif data == "i2":
 		data = '0xFF9867'
 	elif data == "i3":
@@ -39,5 +41,9 @@ while True:
 		data = '0xFF30CF'
 	elif data == "i5":
 		data = '0xFF18E7'
+	elif data == "i0":
+		data = '0xFF4AB5'
+	elif data == "*":
+		data = '0xFF42BD'
 	sock.send(bytes(data.encode("utf-8")))
 
