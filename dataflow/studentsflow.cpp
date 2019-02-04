@@ -16,6 +16,7 @@ void StudentsFlow::addStudent(const SingleStudent &myStudent)
 void StudentsFlow::removeStudent(const int ind)
 {
     int i = findById(ind);
+    qInfo() << "REMOVE" << i << "ID:" << ind;
 
     if (i >= 0)
     {
@@ -150,17 +151,28 @@ void StudentsFlow::removeAll()
     }
 }
 
-void StudentsFlow::setPM(QString plumin)
+void StudentsFlow::setPM(QString plumin, int id)
 {
-    qInfo()<<plumin;
+    int ind = findById(id);
+    if (ind >= 0)
+        setData(this->index(ind), plumin, PlusesRole);
+}
+
+void StudentsFlow::setAverage(QString average, int id)
+{
+    int ind = findById(id);
+    if (ind >= 0)
+        setData(this->index(ind), average, AverageRole);
 }
 
 void StudentsFlow::activeStudent(int id)
 {
     qInfo() << id;
+    setMain(id);
+    int mainCount = getMainCount();
     int i = rowCount() - 1 ; //INITIAL I MUST BE ROWCOUNT-1 <INDEX OUT OF RANGE>
-    while (rowCount() > 1){
-        if (m_students[i].order() != id)
+    while (rowCount() > mainCount){
+        if ( !m_students[i].ismain() )
         {
             qInfo() << i;
             beginRemoveRows(QModelIndex(),i,i);
@@ -170,7 +182,7 @@ void StudentsFlow::activeStudent(int id)
         i--;
     }
     qInfo() << "SET MAIN";
-    setMain(id);
+
 }
 
 int StudentsFlow::findById(int id)
@@ -186,4 +198,16 @@ int StudentsFlow::findById(int id)
     else {
         return i;
     }
+}
+
+int StudentsFlow::getMainCount()
+{
+    int count = 0;
+    int i = 0;
+    while ( i < rowCount() ) {
+        if ( m_students[i].ismain() )
+            count++;
+        i++;
+    }
+    return count;
 }

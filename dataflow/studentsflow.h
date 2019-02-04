@@ -39,15 +39,17 @@ public:
 
     void setMain(int id);
 
-    void setPM(QString plumin);
+    void setPM(QString plumin, int id);
 
-    int findById(int id); // RETURNS INDEX POSITION OF STUDENT WITH ID
+    void setAverage(QString average, int id);
 
 protected:
     QHash<int, QByteArray> roleNames() const;
 
 private:
     QList<SingleStudent> m_students;
+    int findById(int id); // RETURNS INDEX POSITION OF STUDENT WITH ID
+    int getMainCount(); // RETURNS COUNT OF MAIN STUDENTS
 
 };
 

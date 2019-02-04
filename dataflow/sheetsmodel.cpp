@@ -92,13 +92,7 @@ void SheetsModel::classSelected(int classId, int lessonNum)
         googlewrapper.studCount = students.length();
 
         emit gotCount(googlewrapper.studCount); //EMIT THIS TO SET OPTIMAL SIZE OF CELLS
-/*
-        qInfo()<<students.length();
-        qInfo()<<students;
-        qInfo()<<sex;
-        qInfo()<<names;
-        qInfo()<<lessonNum;
-*/
+
         getDates(lessonNum);
     });
 }
@@ -273,6 +267,7 @@ QString SheetsModel::getSex(QString name)
 
 void SheetsModel::btnHandler(int btnId)
 {
+    listener.isActive = false;
     if (btnId > students.length()) //CHECK IF ID <= LENGTH OF STUDENTS
         return;
 
@@ -292,37 +287,37 @@ void SheetsModel::btnHandler(int btnId)
     }
 
     /*BUTTON EVENTS DURING LESSON*/
-    if (isLessonStarted && isOn[btnId-1] && !grading) {
-        isActive[btnId-1] = !isActive[btnId-1];
-        if (isActive[btnId-1])
-        {
+    if (isLessonStarted && isOn[btnId-1] && !grading && !locked) {
+
+        if (!isActive[btnId-1]){
+            isActive[btnId-1] = true;
             studentsflow.addStudent(createSingle(btnId-1));// IS MAIN FALSE PERMANENTLY
             order << btnId-1;
             updateCurrentProb();
         }
         else {
-            order.removeAt(order.indexOf(btnId-1));
-            updateCurrentProb();
-
-            if(!isMain[btnId-1]){
+            if (!isMain[btnId-1]){
+                isActive[btnId-1] = false;
                 studentsflow.removeStudent(btnId-1);
+                order.removeAt(order.indexOf(btnId-1));
+                updateCurrentProb();
             }
             else {
                 grading = true;
                 gradeId = btnId-1;
                 // SOUND OR NOTIFICATION OF +- OR MARK NECESSITY
             }
-
         }
-
     }
 
     //DISCUSSIVE POINT!!! ACTIVITY ++ EVERY BTN EVENT
-
+    listener.isActive = true;
 }
 
 void SheetsModel::irHandler(int irCode)
 {
+    listener.isActive = false;
+
     int mcount = isMain.count(true); //COUNT OF MAIN STUDENTS
 
     int mId; //ID OF CURRENTLY GRADING STUDENT
@@ -344,6 +339,7 @@ void SheetsModel::irHandler(int irCode)
             if (mcount > 0){
                 updatePM(mId);
                 studentsflow.removeStudent(mId);
+                isActive[mId] = false;
                 isMain[mId] = false;
                 gradeId = 99;
                 grading = false;
@@ -374,6 +370,13 @@ void SheetsModel::irHandler(int irCode)
             }
 
             break;
+
+        case ONE:
+            if (isLessonStarted)
+                locked = !locked;
+
+            break;
+
         case TWO:
             if (isLessonStarted && (mcount > 0))
                 markUpdate(2, mId);
@@ -395,11 +398,26 @@ void SheetsModel::irHandler(int irCode)
 
             break;
 
+        case ZERO:
+            if (isLessonStarted)
+                absent();
+
+            break;
+
+        case STAR:
+            if (isLessonStarted){
+                order.clear();
+                studentsflow.removeAll();
+                callStudent();
+            }
+
+            break;
+
         default:
             break;
     }
 
-
+    listener.isActive = true;
 }
 
 QJsonArray SheetsModel::readJSONArray(QNetworkReply *reply) //MODULE FOR READ JSON
@@ -473,8 +491,7 @@ void SheetsModel::googleSay(QString phrase)
 
 void SheetsModel::updateTotalProb()//ALPHA!!! DISCUSSIVE POINT!!! ADD 0.5 INCREASE OF MARK!!!
 {
-    listener.isActive = false;
-    int onlineCount = 0;
+    int onlineCount = isMain.count(true);
     int sumCountOfMarks = 0; //SUM OF COUNT OF MARKS OF EACH STUDENT
     int sumStudDays = 0; //SUM OF DAYS WITHOUT SKIP
     int maxStud = 0; //MAX OF DAYS WITHOUT SKIP
@@ -488,7 +505,6 @@ void SheetsModel::updateTotalProb()//ALPHA!!! DISCUSSIVE POINT!!! ADD 0.5 INCREA
 
         if ( isOn[i] )
         {
-            onlineCount ++;
             probability[i] = 0;
             decisionList[i] = 0;
 
@@ -542,17 +558,11 @@ void SheetsModel::updateTotalProb()//ALPHA!!! DISCUSSIVE POINT!!! ADD 0.5 INCREA
                 decisionList[i] = double(0);
             }
         }
-
     }
-
-    listener.isActive = true;
-
 }
 
 void SheetsModel::updateCurrentProb()
 {
-    listener.isActive = false;
-
     double sumCurP = 0; //SUM OF CURRENT PROBABIBILITIES
     QList<double> orderProb; //TIME ORDERING PROBABILITY
     int orderSum = 0; //SUM FOR ORDER PROBABILIBTY
@@ -585,14 +595,10 @@ void SheetsModel::updateCurrentProb()
                 currentDecisionList[i] = currentDecisionList[i-1];
         }
     }
-
-    listener.isActive = true;
-
 }
 
 void SheetsModel::callStudent()
 {
-    listener.isActive = false;
 
     //TO PREVENT 1 STUDENT CALL EVERYTIME THIS FUNCTION MUST BE REVISED
     //IF THERE ARE NO STUDENTS TO ANSWER CASE 1, ELSE CASE 2
@@ -603,7 +609,7 @@ void SheetsModel::callStudent()
         isMain[id] = !isMain[id];
         SingleStudent bounded = createSingle(id);
         studentsflow.addStudent(bounded);
-        studentsflow.setMain();
+//        studentsflow.setMain(id);
         emit studentSelected(id); //REVISE IS IT NEEDED?
     }
     else {
@@ -614,8 +620,6 @@ void SheetsModel::callStudent()
         studentsflow.activeStudent(id);
         emit studentSelected(id); //REVISE IS IT NEEDED?
     }
-
-    listener.isActive = true;
 }
 
 int SheetsModel::coinToss(QList<double> decList)
@@ -667,18 +671,27 @@ void SheetsModel::addPM(QString plusmin, int id)
             break;
         }
     }
+    studentsflow.setPM(plumin[id], id);
 }
 
 void SheetsModel::markUpdate(int mark, int id)
 {
     avMark[id] = (avMark[id]*mksCount[id]+double(mark))/double(mksCount[id] + 1);
     mksCount[id]++;
+
+    QString averageString;
+    double avmCache = avMark[id];
+    studentsflow.setAverage(averageString.sprintf("%6.2f", avmCache), id);
+
     googleSay(" "+names[id]+" получает "+QString::number(mark));
     int lastfree = mksAtd[id]->lastIndexOf(""); //LAST INDEX WITH FREE VALUE
     (*mksAtd[id])[lastfree] = QString::number(mark);
 
+    updateTotalProb();
+
     auto updateReply = googlewrapper.updateSheet(QString::number(mark),
                                                  columnIndexes[lastfree+3], startId+id);
+
     connect(updateReply, &QNetworkReply::finished, [=]() {
         if (updateReply->error() != QNetworkReply::NoError) {
             emit error(updateReply->errorString());
@@ -698,4 +711,9 @@ void SheetsModel::updatePM(int id)
             return;
         }
     });
+}
+
+void SheetsModel::absent()
+{
+    qInfo() << "METHOD MUST BE IMPLEMENTED";
 }

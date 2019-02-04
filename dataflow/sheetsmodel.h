@@ -62,6 +62,7 @@ private:
     QString sheetId; //ID OF DATA SHEET
     QString pmColumn; // COLUMN OF PLUSES AND MINUSES IN SHEETS
 
+    bool locked = false; // BLOCK BUTTONS
     bool isLessonStarted = false;
     bool grading = false; // TRUE IF TEACHER GRADING MAIN STUDENT
     int gradeId = 99; // ID OF STUDENT TO GET MARK/PM
@@ -87,6 +88,7 @@ private:
     void addPM(QString plusmin, int id); //ADD PLUS OR MINUS
     void updatePM(int id); //UPDATE STUDENT'S +- IN SHEETS
     void markUpdate(int mark, int id); //MARK TO STUDENT WITH ID
+    void absent(); // ABSENT STUDENTS PASS TO SHEET "п" BY DEFAULT
 
     int coinToss(QList<double>); //RETURN STUDENT'S ID TO ASK FROM DECISION LIST
 
@@ -106,10 +108,13 @@ private:
         OK = 16712445,
         LEFT = 16720605,
         RIGHT = 16761405,
+        ONE = 16738455,
         TWO = 16750695,
         THREE = 16756815,
         FOUR = 16724175,
-        FIVE = 16718055
+        FIVE = 16718055,
+        ZERO = 16730805,
+        STAR = 16728765
     };
 
 
