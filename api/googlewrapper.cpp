@@ -27,9 +27,6 @@ GoogleWrapper::GoogleWrapper(QObject *parent) : QObject(parent)
     oauth2.setAccessTokenUrl(tokenUri);
     oauth2.setClientIdentifierSharedKey(clientSecret);
 
-//    QNetworkAccessManager* netManager = new QNetworkAccessManager;
-//    oauth2.setNetworkAccessManager(netManager);
-
     auto replyHandler = new QOAuthHttpServerReplyHandler(port, this);
     oauth2.setReplyHandler(replyHandler);
 
@@ -110,12 +107,9 @@ QNetworkReply *GoogleWrapper::updateSheet(QString data, QString col, int row)
     QNetworkRequest reqq; //SETTING REQUEST PARAMETERS
     reqq.setUrl(QUrl(gHeader+sheetId+values+col+
                      QString::number(row)+"%3A"+col+QString::number(row)+"?valueInputOption=RAW"));
-
     reqq.setRawHeader(QString("Authorization").toLocal8Bit(),
                       ("Bearer "+oauth2.token()).toLocal8Bit());
 
-    qInfo()<<"PUT REQUEST";
-    qInfo()<<reqq.url();
 
     return oauth2.networkAccessManager()->put(reqq,toWrite.toLocal8Bit());
 }
@@ -131,12 +125,16 @@ QNetworkReply *GoogleWrapper::updateSheet(QStringList data, QString col)
                       ("Bearer "+oauth2.token()).toLocal8Bit());
     reqq.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
-    QJsonObject subjson;
-
     QString range = col+QString::number(initRaw)+":"+
             col+QString::number(initRaw+dataSize-1);
 
-    QJsonArray jsonData = QJsonArray::fromStringList(data);
+    QJsonArray jsonData;
+    int i = 0;
+    while ( i < dataSize) {
+        QJsonArray element = {data[i]};
+        jsonData << element;
+        i++;
+    }
 
     QJsonObject json
     {
@@ -147,6 +145,7 @@ QNetworkReply *GoogleWrapper::updateSheet(QStringList data, QString col)
 
     return oauth2.networkAccessManager()->put(reqq, QJsonDocument(json).toJson());
 
+
 }
 
 QNetworkReply *GoogleWrapper::speechGet(QString text)
@@ -154,33 +153,31 @@ QNetworkReply *GoogleWrapper::speechGet(QString text)
     QNetworkRequest reqq;
     reqq.setUrl(QUrl(cloudHeader));
     reqq.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-    QJsonObject json;
-    QJsonObject subjson;
-
-    subjson.insert("text",text);
-    json.insert("input",subjson);
-    subjson.remove("text");
-
-    QJsonArray pAudio;
-    pAudio.prepend("OGG_OPUS");
-    subjson.insert("audioEncoding","MP3");
-    json.insert("audioConfig",subjson);
-    subjson.remove("audioEncoding");
-
-
-    subjson.insert("languageCode","ru-RU");
-//    subjson.insert("name",)
-    json.insert("voice",subjson);
-    subjson.remove("languageCode");
-
-
-
-
-    qInfo()<<"POST CLOUD";
-    qInfo()<<json;
     reqq.setRawHeader(QString("Authorization").toLocal8Bit(),
                       ("Bearer "+oauth2.token()).toLocal8Bit());
-    return  oauth2.networkAccessManager()->post(reqq,QJsonDocument(json).toJson());
 
+    QJsonObject audioConfig
+    {
+        {"audioEncoding", "MP3"}
+    };
+
+    QJsonObject input
+    {
+        {"text", text}
+    };
+
+    QJsonObject voice
+    {
+        {"languageCode", "ru-RU"}
+    };
+
+    QJsonObject json
+    {
+        {"audioConfig", audioConfig},
+        {"input", input},
+        {"voice", voice}
+    };
+
+    return  oauth2.networkAccessManager()->post(reqq,QJsonDocument(json).toJson());
 
 }
