@@ -607,7 +607,11 @@ void SheetsModel::callStudent()
     //IF THERE ARE NO STUDENTS TO ANSWER CASE 1, ELSE CASE 2
 
     if (order.isEmpty()){
+
         int id = coinToss(decisionList);
+        while (isMain[id])
+            id = coinToss(decisionList);
+
         googleSay("Отвечает "+names[id]+" "+surnames[id]);
         isMain[id] = !isMain[id];
         SingleStudent bounded = createSingle(id);
@@ -617,6 +621,9 @@ void SheetsModel::callStudent()
     }
     else {
         int id = coinToss(currentDecisionList);
+        while (isMain[id])
+            id = coinToss(currentDecisionList);
+
         googleSay("Отвечает "+names[id]+" "+surnames[id]);
         isMain[id] = !isMain[id];
         order.removeAt(order.indexOf(id));
