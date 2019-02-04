@@ -308,6 +308,7 @@ void SheetsModel::btnHandler(int btnId)
             else {
                 grading = true;
                 gradeId = btnId-1;
+                isActive[btnId-1] = false;
                 // SOUND OR NOTIFICATION OF +- OR MARK NECESSITY
             }
         }
@@ -326,11 +327,15 @@ void SheetsModel::irHandler(int irCode)
     int mId; //ID OF CURRENTLY GRADING STUDENT
 
     if (gradeId == 99){
-        mId = isMain.indexOf(true);
+
+        mId = studentsflow.getLast();
+
     }
     else {
+
         mId = gradeId;
     }
+
 
     switch (irCode) {
         case UP:
@@ -339,7 +344,7 @@ void SheetsModel::irHandler(int irCode)
 
             break;
         case DOWN: // END OF GRADING
-            if (mcount > 0){
+            if (mId >= 0){
                 updatePM(mId);
                 studentsflow.removeStudent(mId);
                 isActive[mId] = false;
@@ -350,26 +355,24 @@ void SheetsModel::irHandler(int irCode)
 
             break;
         case RIGHT:
-            if (isLessonStarted && (mcount > 0))
+            if (isLessonStarted && (mId >= 0))
                 addPM("+", mId);
 
             break;
         case LEFT:
-            if (isLessonStarted && (mcount > 0))
+            if (isLessonStarted && (mId >= 0))
                 addPM("-", mId);
 
             break;
         case OK:
-            if (!isLessonStarted){
+            if (!isLessonStarted) {
                 studentsflow.removeAll();
                 updateTotalProb();
                 isLessonStarted = true;
-                order.clear();
-                qInfo() << probability;
-                qInfo() << decisionList;
             }
-            else if ( mcount > 0 ) {
-                qInfo() << "LESSON IS STARTED";
+            else {
+                studentsflow.removeAll();
+                clearNotMain();
             }
 
             break;
@@ -409,7 +412,7 @@ void SheetsModel::irHandler(int irCode)
 
         case STAR:
             if (isLessonStarted){
-                order.clear();
+                clearNotMain();
                 studentsflow.removeAll();
                 callStudent();
             }
@@ -613,7 +616,8 @@ void SheetsModel::callStudent()
             id = coinToss(decisionList);
 
         googleSay("Отвечает "+names[id]+" "+surnames[id]);
-        isMain[id] = !isMain[id];
+        isMain[id] = true;
+        isActive[id] = true; //BECAUSE LIST IS EMPTY
         SingleStudent bounded = createSingle(id);
         studentsflow.addStudent(bounded);
 //        studentsflow.setMain(id);
@@ -625,8 +629,9 @@ void SheetsModel::callStudent()
             id = coinToss(currentDecisionList);
 
         googleSay("Отвечает "+names[id]+" "+surnames[id]);
-        isMain[id] = !isMain[id];
-        order.removeAt(order.indexOf(id));
+        isMain[id] = true;
+        clearNotMain();
+//        order.removeAt(order.indexOf(id));
         studentsflow.activeStudent(id);
         emit studentSelected(id); //REVISE IS IT NEEDED?
     }
@@ -740,4 +745,17 @@ void SheetsModel::absent()
             return;
         }
     });
+}
+
+void SheetsModel::clearNotMain()
+{
+    order.clear();
+    int i = 0;
+    while ( i < isActive.count() )
+    {
+        if ( !isMain[i] ){
+            isActive[i] = false;
+        }
+        i++;
+    }
 }

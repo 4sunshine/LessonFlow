@@ -142,11 +142,14 @@ void StudentsFlow::setMain(int id)
 
 void StudentsFlow::removeAll()
 {
-    int i = rowCount();
-    while (rowCount() > 0){
-        beginRemoveRows(QModelIndex(),i,i);
-        m_students.removeAt(i);
-        endRemoveRows();
+    int mcount = getMainCount();
+    int i = rowCount() - 1;
+    while (rowCount() > mcount){
+        if ( !m_students[i].ismain() ) {
+            beginRemoveRows(QModelIndex(),i,i);
+            m_students.removeAt(i);
+            endRemoveRows();
+        }
         i--;
     }
 }
@@ -210,4 +213,22 @@ int StudentsFlow::getMainCount()
         i++;
     }
     return count;
+}
+
+int StudentsFlow::getFirst()
+{
+    if (rowCount() > 0)
+        return m_students[0].order();
+    else {
+        return -1;
+    }
+}
+
+int StudentsFlow::getLast()
+{
+    if (rowCount() > 0)
+        return m_students.last().order();
+    else {
+        return -1;
+    }
 }

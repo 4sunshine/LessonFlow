@@ -33,7 +33,7 @@ public:
 
     void setIsOn(int i);
 
-    void removeAll();
+    void removeAll(); //REMOVE ALL NOT MAIN STUDENTS
 // DISCUSSION MODE MUST BE IMPLEMENTED WHEN SEVERAL STUDENTS ARE ACTIVE
     void activeStudent(int id);
 
@@ -42,6 +42,10 @@ public:
     void setPM(QString plumin, int id);
 
     void setAverage(QString average, int id);
+
+    int getFirst(); // RETURN ID OF FIRST STUDENT
+
+    int getLast(); // RETURN ID OF LAST MAIN STUDENT
 
 protected:
     QHash<int, QByteArray> roleNames() const;

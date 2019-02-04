@@ -89,6 +89,7 @@ private:
     void updatePM(int id); //UPDATE STUDENT'S +- IN SHEETS
     void markUpdate(int mark, int id); //MARK TO STUDENT WITH ID
     void absent(); // ABSENT STUDENTS PASS TO SHEET "п" BY DEFAULT
+    void clearNotMain(); // SET ALL NOTMAIN STUDENTS TO INACTIVE STATE
 
     int coinToss(QList<double>); //RETURN STUDENT'S ID TO ASK FROM DECISION LIST
 
