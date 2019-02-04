@@ -3,6 +3,7 @@
 #include <nRF24L01.h>
 #include <MirfHardwareSpiDriver.h>
 #include <IRremote.h>
+#include "display.h"
 
 const int RECEIVE_PIN = 8;	// ir receiver pin
 const int INT_PIN = 22; 	// nrf irq pin
@@ -11,6 +12,7 @@ const int RST_SIG = -1;		// ir code to reset esp
 
 IRrecv irrecv(RECEIVE_PIN);
 decode_results results;
+display disp;
 
 void setup() {
   pinMode(GRNLED,OUTPUT);
