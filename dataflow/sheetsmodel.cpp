@@ -588,15 +588,18 @@ void SheetsModel::updateTotalProb()//ALPHA!!! DISCUSSIVE POINT!!! ADD 0.5 INCREA
             }
 
             //***********MATHEMATICAL MODEL OF MAKING DECISIONS**********************//
-            // BETA VERSION!!!: [P(COUNT) + P(STUDDAYS) + P(TWO) + P(LAST)] / 4
+            // BETA VERSION!!!: [4 P(COUNT) + P(STUDDAYS) + 2 P(TWO) + 5 P(LAST)] / 12
 
-            probability[i] = .25*(countProb[i] + studDaysProb[i]
-                                  + twoProb[i] + sinceProb[i]);
+            probability[i] = (4.*countProb[i] + studDaysProb[i]
+                                  + 2.*twoProb[i] + 5.*sinceProb[i]) / double(12);
+/*
             qInfo() <<"::::::MKS COUNT" << mksCount[i];
+            qInfo() << "PROBABILITY" << probability[i];
             qInfo() << "COUNT PROB" <<countProb[i];
             qInfo() << "STUDDAYSPROB"  <<studDaysProb[i];
             qInfo() << "TWO" <<twoProb[i];
             qInfo() << "SINCE"<<sinceProb[i];
+            */
         }
     }
 
@@ -605,6 +608,8 @@ void SheetsModel::updateTotalProb()//ALPHA!!! DISCUSSIVE POINT!!! ADD 0.5 INCREA
     for(int i = 1; i < studentsCount; i++){
         decisionList[i] = decisionList[i-1] + probability[i];
     }
+
+    qInfo() << decisionList;
 
 }
 
