@@ -11,25 +11,23 @@ GoogleWrapper::GoogleWrapper(QObject *parent) : QObject(parent)
     file.close();
     /*SETTINGS FOR GRANT*/
     QJsonDocument document = QJsonDocument::fromJson(val.toUtf8());
-    const auto object = document.object();
-    const auto settingsObject = object["web"].toObject();
+    const QJsonObject object = document.object();
+    const QJsonObject settingsObject = object["web"].toObject();
     const QUrl authUri(settingsObject["auth_uri"].toString());
-    const auto clientId = settingsObject["client_id"].toString();
+    const QString clientId = settingsObject["client_id"].toString();
     const QUrl tokenUri(settingsObject["token_uri"].toString());
-    const auto clientSecret(settingsObject["client_secret"].toString());
-    const auto redirectUris = settingsObject["redirect_uris"].toArray();
+    const QString clientSecret(settingsObject["client_secret"].toString());
+    const QJsonArray redirectUris = settingsObject["redirect_uris"].toArray();
     const QUrl redirectUri(redirectUris[0].toString()); // Get the first URI
-    const auto port = static_cast<quint16>(redirectUri.port()); // Get the port
+    const u_short port = static_cast<quint16>(redirectUri.port()); // Get the port
     /*OAUTH2 SETTINGS*/
     oauth2.setScope("https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/cloud-platform");
     oauth2.setAuthorizationUrl(authUri);
     oauth2.setClientIdentifier(clientId);
     oauth2.setAccessTokenUrl(tokenUri);
     oauth2.setClientIdentifierSharedKey(clientSecret);
-
-    auto replyHandler = new QOAuthHttpServerReplyHandler(port, this);
+    QOAuthHttpServerReplyHandler *replyHandler = new QOAuthHttpServerReplyHandler(port, this);
     oauth2.setReplyHandler(replyHandler);
-
     connect(&oauth2, &QOAuth2AuthorizationCodeFlow::authorizeWithBrowser,
         &QDesktopServices::openUrl);
 
@@ -38,7 +36,6 @@ GoogleWrapper::GoogleWrapper(QObject *parent) : QObject(parent)
         if (status == QAbstractOAuth::Status::Granted)
             {
                 emit authenticated();
-                qInfo() << "google authenticated";
             }
         });
 

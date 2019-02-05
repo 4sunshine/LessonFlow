@@ -15,11 +15,13 @@ SheetsModel::SheetsModel(QObject *parent) : QObject(parent),
     /*SOUND EFFECTS BLOCK*/
 
     colInd();
-    grant();
+
     connect(&listener, &Listener::buttonEvent, this, &SheetsModel::btnHandler);
     connect(&listener, &Listener::irSignal, this, &SheetsModel::irHandler);
 //    connect(this,&SheetsModel::audioReady,this,&SheetsModel::playAudio);
     xCase.seed(uint32_t(QDateTime::currentMSecsSinceEpoch()));
+
+    grant();
 }
 
 void SheetsModel::grant()
