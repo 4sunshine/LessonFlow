@@ -33,7 +33,7 @@ private:
     QBuffer audioStream; //BUFFER TO PLAY
     QByteArray bytesOfSound; //AUDIO DATA
 
-    QRandomGenerator64 xCase;
+    QRandomGenerator xCase;
     QList<ClassList*> classNames; //LIST OF STRUCTURES CLASSLIST
     QStringList columnIndexes; //LIST OF COLUMN INDEXES
     QStringList classesRepresent; //LIST OF SUBJS&CLASSES FOR INTERFACE
@@ -69,6 +69,7 @@ private:
     // IF THERE IS ONLY ONE MAIN STUDENT GRADE ID = 99
 
     int dataSize; //DATA LENGTH FOR SINGLE STUDENT SINCE THE BEGINNING OF SEMESTER
+    int studentsCount = 0; //FOR INITIALIZATION PURPOSES
 
     const QStringList months = {"Январь","Февраль","Март","Апрель",
                                 "Май","Июнь","Июль","Август",
@@ -90,7 +91,11 @@ private:
     void markUpdate(int mark, int id); //MARK TO STUDENT WITH ID
     void absent(); // ABSENT STUDENTS PASS TO SHEET "п" BY DEFAULT
     void clearNotMain(); // SET ALL NOTMAIN STUDENTS TO INACTIVE STATE
+    void updateTotalProb(); //UPDATE PROBABILITIES FOR ALL STUDENTS
+    void updateCurrentProb(); //UPDATE PROBABILITIES FOR CURRENTLY ACTIVE STUDENTS
 
+    int sinceLastMark(int id, int mark); // RETURN BY ID NUMBER OF LESSONS SINCE LAST MARK
+    int sinceLastMark(int id); // RETURN BY ID SINCE ANY LAST MARK
     int coinToss(QList<double>); //RETURN STUDENT'S ID TO ASK FROM DECISION LIST
 
     const SingleStudent createSingle(int id); //CREATE A SINGLE STUDENT BY ID
@@ -125,8 +130,7 @@ private slots:
     void btnHandler(int btnId); //HANDLE BUTTON EVENT
     void irHandler(int irCode); //HANDLE IR EVENT
     void playAudio();
-    void updateTotalProb(); //UPDATE PROBABILITIES FOR ALL STUDENTS
-    void updateCurrentProb(); //UPDATE PROBABILITIES FOR CURRENTLY ACTIVE STUDENTS
+
 
 
 signals:

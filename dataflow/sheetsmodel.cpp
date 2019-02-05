@@ -92,7 +92,9 @@ void SheetsModel::classSelected(int classId, int lessonNum)
             }
         googlewrapper.studCount = students.length();
 
-        emit gotCount(googlewrapper.studCount); //EMIT THIS TO SET OPTIMAL SIZE OF CELLS
+        studentsCount = students.length();
+
+        emit gotCount(studentsCount); //EMIT THIS TO SET OPTIMAL SIZE OF CELLS
 
         getDates(lessonNum);
     });
@@ -144,7 +146,7 @@ void SheetsModel::getDates(int lessonNum)
                 for (int i = 0; i < dataPM.size();i++) //READING PLUMINS TO CLASS
                     plumin << dataPM[i][0].toString();
 
-                while (plumin.length() < students.length()) //FULLFILLING PLUMINS ARRAY
+                while (plumin.length() < studentsCount) //FULLFILLING PLUMINS ARRAY
                     plumin << "";
 
                 qInfo() << plumin;
@@ -187,7 +189,7 @@ void SheetsModel::downloadData()
             }
             const QJsonArray data = readJSONArray(reply);
 
-            for (int i = 0; i < students.length(); i++){
+            for (int i = 0; i < studentsCount; i++){
                 QStringList locData; //TEMPORARY STRING LIST
                 int locnt = 0; //TEMP FOR COUNT OF MARKS
                 int sum = 0; //TEMP FOR SUM OF MARKS
@@ -269,7 +271,7 @@ QString SheetsModel::getSex(QString name)
 void SheetsModel::btnHandler(int btnId)
 {
     listener.isActive = false;
-    if ((btnId > students.length()) || (btnId <= 0) ) { //CHECK IF ID <= LENGTH OF STUDENTS
+    if ((btnId > studentsCount) || (btnId <= 0) ) { //CHECK IF ID <= LENGTH OF STUDENTS
         listener.isActive = true;
         return;
     }
@@ -440,7 +442,7 @@ QJsonArray SheetsModel::readJSONArray(QNetworkReply *reply) //MODULE FOR READ JS
 void SheetsModel::prepareGrid()
 {
     int i = 0;
-    while(i < students.length())
+    while(i < studentsCount)
     {
         studentsflow.addStudent(createSingle(i));
         i++;
@@ -453,7 +455,7 @@ QString SheetsModel::setAva(int i)
     realAva.setFileName(QCoreApplication::applicationDirPath()+"/avatar/"+
                         curClass+"/"+QString::number(i+1)+".png");
     if (!realAva.exists()){
-        int rNum = rand() % 23;
+        int rNum = xCase.bounded(23);
         realAva.setFileName(QCoreApplication::applicationDirPath()+"/avatar/"+
                             sex[i]+"/"+QString::number(rNum)+".png");
     }
@@ -500,82 +502,145 @@ void SheetsModel::updateTotalProb()//ALPHA!!! DISCUSSIVE POINT!!! ADD 0.5 INCREA
     int onlineCount = isMain.count(true);
     int sumCountOfMarks = 0; //SUM OF COUNT OF MARKS OF EACH STUDENT
     int sumStudDays = 0; //SUM OF DAYS WITHOUT SKIP
+    int sumSinceLast = 0; //SUM OF DAYS SINCE LAST MARK
+    int sumTwo = 0; //SUM OF DAYS SINCE 2
     int maxStud = 0; //MAX OF DAYS WITHOUT SKIP
     int maxCount = 0; //MAX OF MARKS COUNT
+    int minSinceLast = dataSize; //MAX DAYS SINCE LAST MARK
+    int maxTwo = 0; //MIN DAYS SINCE TWO
+    QList<int> cacheTwo; //CACHE SINCE TWO
+    QList<int> cacheSince; //CACHE SINCE ANY
     QList<double> countProb; //LIST OF MARKS COUNT PROBABILITIES
     QList<double> studDaysProb; //LIST OF STUD DAYS PROBABILITIES
+    QList<double> sinceProb; //LIST OF LAST MARK DAYS PROBABILITIES
+    QList<double> twoProb; //LIST OF LAST TWO PROBABILITIES
 
-    for (int i = 0; i < mksCount.count(); i++) {
+    for (int i = 0; i < studentsCount; i++) {
         countProb << double(0);
         studDaysProb << double(0);
+        sinceProb << double(0);
+        twoProb << double(0);
+        cacheTwo << 0;
+        cacheSince << 0;
 
         if ( isOn[i] )
         {
-            probability[i] = 0;
-            decisionList[i] = 0;
+            // TWO PROBABILITY MUST BE DISCUSSED!!!!!!
+            // CHECK THIS PART OF CODE FOR REAL TIME EXECUTION
 
-            if (studDays[i] > maxStud)
+            cacheTwo[i] = sinceLastMark(i, 2);
+
+            if (cacheTwo[i] > maxTwo) //LAST TWO
+                maxTwo = cacheTwo[i];
+
+            // FIND MINIMAL COUNT OF DAYS SINCE ANY LAST MARK
+            cacheSince[i] = sinceLastMark(i);
+
+            if (cacheSince[i] < minSinceLast) //LAST MARK
+                minSinceLast = cacheSince[i];
+
+            if (studDays[i] > maxStud) //STUD DAYS
                 maxStud = studDays[i];
 
-            if (mksCount[i] > maxCount)
+            if (mksCount[i] > maxCount) //MARKS COUNT
                 maxCount = mksCount[i];
         }
     }
 
-    for (int i = 0; i < mksCount.count(); i++) {
+    for (int i = 0; i < studentsCount; i++) {
         if ( isOn[i] )
         {
             sumStudDays += (maxStud - studDays[i] + 1);
-            sumCountOfMarks += (maxCount - mksCount[i] + 1);
+            sumCountOfMarks += (maxCount - mksCount[i]);
+            sumSinceLast += (cacheSince[i] - minSinceLast);
+            sumTwo += (maxTwo - cacheTwo[i]);
         }
     }
 
-    for (int i = 0; i < mksCount.count(); i++) {
+    //COUNT OF MARKS PROBABILITY REDUCED FOR CHILDREN WITH MAXIMAL COUNT OF MARKS
+    //THEY SHOULD BE ACTIVE IN LIVE ORDER
+
+    for (int i = 0; i < studentsCount; i++) {
         if ( isOn[i] )
         {
-            if ( maxStud > 0 )
+            if ( sumStudDays > 0 )
                 studDaysProb[i] = double(maxStud - studDays[i] + 1) / double(sumStudDays);
             else {
                 studDaysProb[i] = double(1)/ double(onlineCount);
             }
 
-            if ( maxCount > 0 )
-                countProb[i] = double(maxCount - mksCount[i] + 1) / double(sumCountOfMarks);
+            if ( sumCountOfMarks > 0 )
+                countProb[i] = double(maxCount - mksCount[i]) / double(sumCountOfMarks);
             else {
                 countProb[i] = double(1)/ double(onlineCount);
             }
 
+            if ( sumSinceLast > 0 )
+                sinceProb[i] = double(cacheSince[i] - minSinceLast) / double(sumSinceLast);
+            else {
+                sinceProb[i] = double(1)/ double(onlineCount);
+            }
+
+            if ( sumTwo > 0 )
+                twoProb[i] = double(maxTwo - cacheTwo[i]) / double(sumTwo);
+            else {
+                twoProb[i] = double(1)/ double(onlineCount);
+            }
+
             //***********MATHEMATICAL MODEL OF MAKING DECISIONS**********************//
-            // ALPHA VERSION!!!: [P(COUNT) + P(STUDDAYS)] / 2
+            // BETA VERSION!!!: [P(COUNT) + P(STUDDAYS) + P(TWO) + P(LAST)] / 4
 
-            probability[i] = .5*(countProb[i] + studDaysProb[i]);
+            probability[i] = .25*(countProb[i] + studDaysProb[i]
+                                  + twoProb[i] + sinceProb[i]);
+            qInfo() <<"::::::MKS COUNT" << mksCount[i];
+            qInfo() << "COUNT PROB" <<countProb[i];
+            qInfo() << "STUDDAYSPROB"  <<studDaysProb[i];
+            qInfo() << "TWO" <<twoProb[i];
+            qInfo() << "SINCE"<<sinceProb[i];
+        }
+    }
 
-            if ( i > 0 ) //MAKE DECISION LIST: [0.05 , 0.09, 0.10 etc..]
-                decisionList[i] = probability[i] + decisionList[i-1];
-            else {
-                decisionList[i] = probability[i];
-            }
-        }
-        // IF STUDENT IS NOT ATTENDING THE LESSON
-        else {
-            if ( i > 0)
-                decisionList[i] = decisionList[i-1];
-            else {
-                decisionList[i] = double(0);
-            }
-        }
+    // UPDATE DECISION LIST
+    decisionList[0] = probability[0];
+    for(int i = 1; i < studentsCount; i++){
+        decisionList[i] = decisionList[i-1] + probability[i];
+    }
+
+}
+
+int SheetsModel::sinceLastMark(int id)
+{
+    int minSinceAny = sinceLastMark(id, 2);
+    // FIND MINIMAL COUNT OF DAYS SINCE ANY LAST MARK
+    for (int j = 3; j < 6; j++) {
+        int temp = sinceLastMark(id, j);
+        if (minSinceAny > temp)
+            minSinceAny = temp;
+    }
+
+    return minSinceAny; //minSinceAny SHOULD BE POSITIVE BY REGULARIZATION
+
+}
+
+int SheetsModel::sinceLastMark(int id, int mark)
+{
+    int result = dataSize-(*mksAtd[id]).lastIndexOf(QString::number(mark)) - 1;
+    if (( result > 0 )&&( result <= dataSize ))
+        return result;
+    else {
+        return dataSize; //FOR REGULARIZATION
     }
 }
 
 void SheetsModel::updateCurrentProb()
 {
+
     double sumCurP = 0; //SUM OF CURRENT PROBABIBILITIES
     QList<double> orderProb; //TIME ORDERING PROBABILITY
     int orderSum = 0; //SUM FOR ORDER PROBABILIBTY
 
-    for (int i = 0; i < mksCount.count(); i++) {
+    for (int i = 0; i < studentsCount; i++) {
         currentProbability[i] = double(0);
-        currentDecisionList[i] = double(0);
         orderProb << double(0);
 
         if ( isActive[i] )
@@ -585,22 +650,19 @@ void SheetsModel::updateCurrentProb()
         }
     }
 
-    for (int i = 0; i < mksCount.count(); i++) {
+    for (int i = 0; i < studentsCount; i++) {
         if ( isActive[i] ) {
             currentProbability[i] = .5*(double(order.count()-order.indexOf(i))/orderSum
                                         +probability[i]/sumCurP);
-            if ( i > 0 )
-                currentDecisionList[i] = currentDecisionList[i-1]+currentProbability[i];
-            else {
-                currentDecisionList[i] = currentProbability[i];
-            }
-
-        }
-        else {
-            if ( i > 0 )
-                currentDecisionList[i] = currentDecisionList[i-1];
         }
     }
+
+    // UPDATE CURRENT DECISION LIST
+    currentDecisionList[0] = currentProbability[0];
+    for(int i = 1; i < studentsCount; i++){
+        currentDecisionList[i] = currentDecisionList[i-1] + currentProbability[i];
+    }
+
 }
 
 void SheetsModel::callStudent()
@@ -620,7 +682,6 @@ void SheetsModel::callStudent()
         isActive[id] = true; //BECAUSE LIST IS EMPTY
         SingleStudent bounded = createSingle(id);
         studentsflow.addStudent(bounded);
-//        studentsflow.setMain(id);
         emit studentSelected(id); //REVISE IS IT NEEDED?
     }
     else {
@@ -643,7 +704,7 @@ int SheetsModel::coinToss(QList<double> decList)
     qInfo() << toss;
     qInfo() << "toss result of:";
     int i = 0;
-    while ((toss > decList[i])&&( i < decList.count())){
+    while ((toss > decList[i])&&( i < studentsCount)){
         i++;
     }
     qInfo() << i;
@@ -731,7 +792,7 @@ void SheetsModel::updatePM(int id)
 void SheetsModel::absent()
 {
     QStringList offStudents; // ABSENT STUDENTS LIST
-    for (int i = 0; i < students.length(); i++) {
+    for (int i = 0; i < studentsCount; i++) {
         if (!isOn[i])
             (*mksAtd[i]).last() = QString(u8"п"); // BY DEFAULT "п"
 
@@ -751,7 +812,7 @@ void SheetsModel::clearNotMain()
 {
     order.clear();
     int i = 0;
-    while ( i < isActive.count() )
+    while ( i < studentsCount )
     {
         if ( !isMain[i] ){
             isActive[i] = false;

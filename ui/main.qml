@@ -19,7 +19,7 @@ Window {
     x: (Screen.width-window.width)/2
     y: (Screen.height-window.height)/2
 
-    flags: {Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint}
+//    flags: {Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint}
 
     onNstudents: {
         if( optCount > 0 ) {
