@@ -5,5 +5,7 @@
         <file>ui/widgets/lessonNumber.qml</file>
         <file>ui/main.qml</file>
         <file>ui/graphics/path868white.png</file>
+        <file>sounds/minus0.wav</file>
+        <file>sounds/plus0.wav</file>
     </qresource>
 </RCC>

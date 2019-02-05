@@ -9,7 +9,7 @@ Window {
     property var models //PROPERTY HOLDS CLASSNAMES
     property var popups //PROPERTY HOLDS STUDENTS
     property var optWidth //OPTIMAL CELL WIDTH IN STUDENTS FLOW MODEL
-    property var optCount //OPRIMAL HORIZONTAL CELLS COUNT
+    property var optCount //OPTIMAL HORIZONTAL CELLS COUNT
 
     id: window
     visible: true

@@ -3,6 +3,7 @@
 
 #include <QMediaPlayer>
 #include <QRandomGenerator64>
+#include <QSoundEffect>
 #include "api/googlewrapper.h"
 #include "server/listener.h"
 #include "studentsflow.h"
@@ -32,6 +33,9 @@ private:
     QMediaPlayer player; //PLAY SOUNDS
     QBuffer audioStream; //BUFFER TO PLAY
     QByteArray bytesOfSound; //AUDIO DATA
+
+    QSoundEffect m_plus; //PLUS SOUND EFFECT
+    QSoundEffect m_minus; //MINUS SOUND EFFECT
 
     QRandomGenerator xCase;
     QList<ClassList*> classNames; //LIST OF STRUCTURES CLASSLIST

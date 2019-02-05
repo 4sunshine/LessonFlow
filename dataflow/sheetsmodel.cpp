@@ -3,8 +3,17 @@
 SheetsModel::SheetsModel(QObject *parent) : QObject(parent),
   studentsflow(),
   googlewrapper(),
-  listener()
+  listener(),
+  m_plus(this),
+  m_minus(this)
 {
+    /*SOUND EFFECTS BLOCK*/
+    m_plus.setSource(QUrl("qrc:/sounds/plus0.wav"));
+    m_plus.setVolume(0.9);
+    m_minus.setSource(QUrl("qrc:/sounds/minus0.wav"));
+    m_minus.setVolume(0.9);
+    /*SOUND EFFECTS BLOCK*/
+
     colInd();
     grant();
     connect(&listener, &Listener::buttonEvent, this, &SheetsModel::btnHandler);
@@ -308,6 +317,7 @@ void SheetsModel::btnHandler(int btnId)
                 updateCurrentProb();
             }
             else {
+                googleSay( names[btnId-1]+" хочет оценку" );
                 grading = true;
                 gradeId = btnId-1;
                 isActive[btnId-1] = false;
@@ -357,13 +367,17 @@ void SheetsModel::irHandler(int irCode)
 
             break;
         case RIGHT:
-            if (isLessonStarted && (mId >= 0))
+            if (isLessonStarted && (mId >= 0)){
+                m_plus.play();
                 addPM("+", mId);
+            }
 
             break;
         case LEFT:
-            if (isLessonStarted && (mId >= 0))
+            if (isLessonStarted && (mId >= 0)){
+                m_minus.play();
                 addPM("-", mId);
+            }
 
             break;
         case OK:

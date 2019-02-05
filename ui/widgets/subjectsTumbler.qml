@@ -6,7 +6,7 @@ Tumbler {
     anchors.centerIn: parent
     font.bold: true
     font.pointSize: 20
-    font.family: "Ubuntu"
+    font.family: "Calibri"
     id: subjectsTumbler
     objectName: "subjectsTumbler"
     width: parent.width/2

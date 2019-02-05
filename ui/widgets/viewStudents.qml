@@ -1,6 +1,7 @@
 import QtQuick 2.11
 
 GridView {
+
     visible: true
     id: studentsGrid
     width: parent.width
@@ -24,7 +25,6 @@ GridView {
 
         Column{
 
-
         id: curItem
 
         Image {
@@ -40,60 +40,57 @@ GridView {
                 color: "#ffffffff"
                 radius: 5
                 gradient:
-
                     Gradient {
-
-                    GradientStop {
-                        position: 0.00;
-                        color: (status) ? "#9900ff00" : "#99ff00ea";
+                        GradientStop {
+                            position: 0.00;
+                            color: (status) ? "#9900ff00" : "#99ff00ea";
+                        }
+                        GradientStop {
+                            position: 1.00;
+                            color: (!ismain) ? "#99ae00ff" : "#99bbea00";
+                        }
                     }
-                    GradientStop {
-                        position: 1.00;
-                        color: (!ismain) ? "#99ae00ff" : "#99bbea00";
-                    }
 
+                Text{
+                    id: nameText
+                    text: name
+                    font.bold: true
+                    font.pixelSize: 0.4*dataRecta.height
+                    color: "#ffffffff"
+                    anchors.left: dataRecta.left
+                    anchors.top: dataRecta.top
                 }
-                Grid{
-                    rows: 1 //2
-                    columns: 2
-                    spacing: 2
-                    Column{
-                    Text{
-                        id: nameText
-                        text: name
-                        font.bold: true
-                        font.pointSize: 15
-                        color: "#ffffffff"
-                        anchors.leftMargin: 5//: parent.horizontalCenter
-                    }
-                    Text{
-                        id: surnameText
-                        text: surname
-                        font.bold: true
-                        font.pointSize: 15
-                        color: "#ffffffff"
-                        anchors.leftMargin: 5//: parent.horizontalCenter
-                    }
-                    }
-                    Column{
-                            Text{
-                                id: pluminText
-                                text: (pluses != "") ? pluses : " "
-                                font.bold: true
-                                font.pointSize: 15
-                                color: "#ffffffff"
-                                }
 
-                            Text{
-                                id: avmarkText
-                                text: average
-                                font.bold: true
-                                font.pointSize: 15
-                                color: "#ffffffff"
-                                anchors.rightMargin: 5
-                            }
-                    }
+                Text{
+                    id: surnameText
+                    text: surname
+                    font.bold: true
+                    font.pixelSize: nameText.font.pixelSize
+                    color: "#ffffffff"
+                    anchors.left: dataRecta.left
+                    anchors.bottom: dataRecta.bottom
                 }
+
+                Text{
+                    id: avmarkText
+                    text: average
+                    font.bold: true
+                    font.pixelSize: 0
+                    color: "#ffffffff"
+                    anchors.right: dataRecta.right
+                    anchors.top: dataRecta.top
+                }
+
+                Text{
+                    id: pluminText
+                    text: (pluses != "") ? pluses : " "
+                    font.bold: true
+                    font.pixelSize: nameText.font.pixelSize
+                    color: "#ffffffff"
+                    anchors.right: dataRecta.right
+                    anchors.bottom: dataRecta.bottom
+                }
+
             }
         }
     }
