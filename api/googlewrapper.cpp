@@ -63,22 +63,16 @@ QNetworkReply *GoogleWrapper::getDateList()
 
 QNetworkReply *GoogleWrapper::getClassesList()
 {
-    QString dataSheetId;
-    QFile file(QCoreApplication::applicationDirPath()+"/api/subandclas");
-    if(!file.open(QIODevice::ReadOnly)) {
-        qInfo()<<"error reading file with subject structure";
-    }
-
-    QTextStream in(&file);
-    while(!in.atEnd()) {
-        QString line = in.readLine();
-        if (line == "dataSheetId:"){
-            dataSheetId = in.readLine();
-        }
-    }
+    QString val; //datasheet id data
+    QFile file(QCoreApplication::applicationDirPath()+"/api/subandclas.json"); //JSON file with google secret
+    file.open(QIODevice::ReadOnly | QIODevice::Text);
+    val = file.readAll();
     file.close();
+    QJsonDocument document = QJsonDocument::fromJson(val.toUtf8());
+    const QJsonObject object = document.object();
+    const QString dataSheetId = object["dataSheetId"].toString();
+
     QString reqUrl = gHeader+dataSheetId+"/values/A2%3AC30?majorDimension=ROWS";
-//    qDebug() << dataSheetId;
     return oauth2.get(reqUrl);
 }
 

@@ -15,13 +15,11 @@ SheetsModel::SheetsModel(QObject *parent) : QObject(parent),
     /*SOUND EFFECTS BLOCK*/
 
     colInd();
-
+    grant();
     connect(&listener, &Listener::buttonEvent, this, &SheetsModel::btnHandler);
     connect(&listener, &Listener::irSignal, this, &SheetsModel::irHandler);
 //    connect(this,&SheetsModel::audioReady,this,&SheetsModel::playAudio);
     xCase.seed(uint32_t(QDateTime::currentMSecsSinceEpoch()));
-
-    grant();
 }
 
 void SheetsModel::grant()
@@ -32,7 +30,7 @@ void SheetsModel::grant()
 
 void SheetsModel::getclasses()
 {
-    auto reply = googlewrapper.getClassesList();
+    QNetworkReply * reply = googlewrapper.getClassesList();
 
     connect(reply, &QNetworkReply::finished, [=]() {
         if (reply->error() != QNetworkReply::NoError) {
@@ -83,7 +81,7 @@ void SheetsModel::classSelected(int classId, int lessonNum)
     sheetId = classNames[classId]->sheetId;
     curClass = classNames[classId]->className;
     googlewrapper.sheetId = sheetId;
-    auto reply = googlewrapper.requestForStudents();
+    QNetworkReply * reply = googlewrapper.requestForStudents();
     connect(reply, &QNetworkReply::finished, [=]() {
         if (reply->error() != QNetworkReply::NoError) {
             emit error(reply->errorString());
@@ -113,7 +111,7 @@ void SheetsModel::classSelected(int classId, int lessonNum)
 
 void SheetsModel::getDates(int lessonNum)
 {
-    auto replyd = googlewrapper.getDateList();
+    QNetworkReply * replyd = googlewrapper.getDateList();
 
     connect(replyd, &QNetworkReply::finished, [=]() {
         if (replyd->error() != QNetworkReply::NoError) {
@@ -139,7 +137,6 @@ void SheetsModel::getDates(int lessonNum)
 
         else if (datMo[datMo.size()-1][0].toString() == "PLUMIN")
         {
-            qInfo()<<"getplumines";
 
             auto reply3 = googlewrapper.getPM(columnIndexes[datMo.count()+2]); //SEE SHEET STRUCTURE
 
@@ -192,7 +189,7 @@ void SheetsModel::getDates(int lessonNum)
 
 void SheetsModel::downloadData()
 {
-        auto reply = googlewrapper.downloadData();
+        QNetworkReply * reply = googlewrapper.downloadData();
         connect(reply, &QNetworkReply::finished, [=]() {
             if (reply->error() != QNetworkReply::NoError) {
                 emit error(reply->errorString());
@@ -446,11 +443,11 @@ void SheetsModel::irHandler(int irCode)
 
 QJsonArray SheetsModel::readJSONArray(QNetworkReply *reply) //MODULE FOR READ JSON
 {
-        const auto json = reply->readAll();
-        const auto document = QJsonDocument::fromJson(json);
+        const QByteArray json = reply->readAll();
+        const QJsonDocument document = QJsonDocument::fromJson(json);
         QString strJson(document.toJson(QJsonDocument::Compact));
-        const auto rootObject = document.object();
-        const auto dataValue = rootObject.value("range");
+        const QJsonObject rootObject = document.object();
+        const QJsonValue dataValue = rootObject.value("range");
         QJsonArray mName = rootObject.value("values").toArray();
         return mName;
 }
@@ -497,7 +494,7 @@ void SheetsModel::playAudio()
 void SheetsModel::googleSay(QString phrase)
 {
     bytesOfSound.clear();
-    auto replygo = googlewrapper.speechGet(QString::fromUtf8(phrase.toUtf8()));
+    QNetworkReply * replygo = googlewrapper.speechGet(QString::fromUtf8(phrase.toUtf8()));
     connect(replygo, &QNetworkReply::finished, [=]() {
         if (replygo->error() != QNetworkReply::NoError) {
             emit error(replygo->errorString());
@@ -505,8 +502,8 @@ void SheetsModel::googleSay(QString phrase)
 //            qInfo()<<replygo->readAll();
             return;
         }
-        const auto json = replygo->readAll();
-        const auto rootObject = QJsonDocument::fromJson(json).object();
+        const QByteArray json = replygo->readAll();
+        const QJsonObject rootObject = QJsonDocument::fromJson(json).object();
         QByteArray zzz = rootObject.value("audioContent").toString().toUtf8();
         bytesOfSound = QByteArray::fromBase64(zzz);
         playAudio();
@@ -800,11 +797,10 @@ void SheetsModel::markUpdate(int mark, int id)
 
 void SheetsModel::updatePM(int id)
 {
-    auto updateReply = googlewrapper.updateSheet(plumin[id], pmColumn, id+startId);
+    QNetworkReply * updateReply = googlewrapper.updateSheet(plumin[id], pmColumn, id+startId);
     connect(updateReply, &QNetworkReply::finished, [=]() {
         if (updateReply->error() != QNetworkReply::NoError) {
             emit error(updateReply->errorString());
-            qInfo()<<updateReply->errorString();
             return;
         }
     });

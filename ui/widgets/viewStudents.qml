@@ -60,7 +60,7 @@ GridView {
                     anchors.left: dataRecta.left
                     anchors.top: dataRecta.top
                 }
-
+/*
                 Text{
                     id: surnameText
                     text: surname
@@ -70,12 +70,12 @@ GridView {
                     anchors.left: dataRecta.left
                     anchors.bottom: dataRecta.bottom
                 }
-
+*/
                 Text{
                     id: avmarkText
                     text: average
                     font.bold: true
-                    font.pixelSize: 0
+                    font.pixelSize: 2*nameText.font.pixelSize
                     color: "#ffffffff"
                     anchors.right: dataRecta.right
                     anchors.top: dataRecta.top
@@ -85,12 +85,22 @@ GridView {
                     id: pluminText
                     text: (pluses != "") ? pluses : " "
                     font.bold: true
+                    font.pixelSize: 0.6*dataRecta.height
+                    color: "#ffffffff"
+                    anchors.left: dataRecta.left
+                    anchors.bottom: dataRecta.bottom
+                }
+/*
+                Text{
+                    id: pluminText
+                    text: (pluses != "") ? pluses : " "
+                    font.bold: true
                     font.pixelSize: nameText.font.pixelSize
                     color: "#ffffffff"
                     anchors.right: dataRecta.right
                     anchors.bottom: dataRecta.bottom
                 }
-
+*/
             }
         }
     }

@@ -19,7 +19,7 @@ Window {
     x: (Screen.width-window.width)/2
     y: (Screen.height-window.height)/2
 
-//    flags: {Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint}
+    flags: {Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.TransparentMode}
 
     onNstudents: {
         if( optCount > 0 ) {
@@ -48,9 +48,9 @@ Window {
         image.visible=false
         width=Screen.desktopAvailableWidth
         height=Screen.desktopAvailableHeight
-        color="#1100aaaa"
-        x:0
-        y:0
+        color="#00000000"
+//        x:0
+//        y:0
 
         var componentst = Qt.createComponent("qrc:/ui/widgets/viewStudents.qml");
         var studFlowView=componentst.createObject(window,
