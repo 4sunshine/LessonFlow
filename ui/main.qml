@@ -58,13 +58,13 @@ Window {
                                                   "cellWidth": optWidth})
         studFlowView.model=studflowModel
         }
+        Image {
+            id: image
+            width: parent.width/6
+            height: image.width
+            x: (parent.width-image.width)/2
+            y: image.height/4
+            source: "qrc:/ui/graphics/path868white.png"
+        }
 
-    Image {
-        id: image
-        width: parent.width/6
-        height: image.width
-        x: (parent.width-image.width)/2
-        y: image.height/4
-        source: "qrc:/ui/graphics/path868white.png"
-    }
 }

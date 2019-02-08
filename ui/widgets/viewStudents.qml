@@ -83,7 +83,7 @@ GridView {
 
                 Text{
                     id: pluminText
-                    text: (pluses != "") ? pluses : " "
+                    text: (pluses != "") ? " "+pluses : " "
                     font.bold: true
                     font.pixelSize: 0.6*dataRecta.height
                     color: "#ffffffff"

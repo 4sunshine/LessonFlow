@@ -50,14 +50,12 @@ void GoogleWrapper::grant(){
 QNetworkReply *GoogleWrapper::requestForStudents()
 {
     QString reqUrl = gHeader+sheetId+"/values/B11%3AB42?majorDimension=ROWS";
-    qDebug() << "Getting students info..."+reqUrl;
     return oauth2.get(reqUrl);
 }
 
 QNetworkReply *GoogleWrapper::getDateList()
 {
     QString reqUrl = gHeader+sheetId+"/values/D7%3ACZ8?majorDimension=COLUMNS";
-    qDebug() << "Getting dates info..."+reqUrl;
     return oauth2.get(reqUrl);
 }
 
@@ -80,7 +78,6 @@ QNetworkReply *GoogleWrapper::downloadData()
 {
     QString lastRow = QString::number(studCount+10);
     QString reqUrl = gHeader+sheetId+"/values/D11%3A"+curCol+lastRow+"?majorDimension=ROWS";
-    qDebug() << "Getting marks info..."+reqUrl;
     return oauth2.get(reqUrl);
 }
 
@@ -159,7 +156,8 @@ QNetworkReply *GoogleWrapper::speechGet(QString text)
 
     QJsonObject voice
     {
-        {"languageCode", "ru-RU"}
+        {"languageCode", "ru-RU"},
+        {"name", "ru-RU-Wavenet-B"}// B,D - MAN VOICES
     };
 
     QJsonObject json
