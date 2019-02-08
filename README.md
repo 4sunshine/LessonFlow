@@ -4,7 +4,7 @@ Web style lesson app
 В папке с исполняемым файлом должны также быть папки:
 /api/ (в ней должны находиться файлы secret_google.json - ключ google для использования
 API GoogleSheets, Google Cloud Text-to-Speech;
-subandclas.json - файл с Id листа GoogleSheets, в котором расположены названия классов и предметов, напримерЖ
+subandclas.json - файл с Id листа GoogleSheets, в котором расположены названия классов и предметов, например:
 {"dataSheetId" : "YOUR_DATASHEET_ID"})
 
 /avatar/ (в поддиректориях папки с названиями классов хранятся аватарки учеников,
