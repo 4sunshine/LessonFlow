@@ -12,3 +12,5 @@ subandclas.json - файл с Id листа GoogleSheets, в котором ра
 девушек и юношей с именами 0.png, 1.png ...)
 
 /sounds/ (в этой папке располагаются файлы plus0.wav и minus0.wav)
+
+Также для работы приложения в Windows необходимы библиотеки OpenSSL 1.0.2q
