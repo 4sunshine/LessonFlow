@@ -226,8 +226,9 @@ int StudentsFlow::getFirst()
 
 int StudentsFlow::getLast()
 {
-    if (rowCount() > 0)
-        return m_students.last().order();
+    int mainCount = getMainCount();
+    if (mainCount > 0)
+        return m_students[mainCount-1].order();
     else {
         return -1;
     }
