@@ -47,7 +47,7 @@ GridView {
                         }
                         GradientStop {
                             position: 1.00;
-                            color: (!ismain) ? "#99ae00ff" : "#99bbea00";
+                            color: (!ismain) ? "#99ae00ff" : "#ffff00ea";
                         }
                     }
 
@@ -56,7 +56,7 @@ GridView {
                     text: name
                     font.bold: true
                     font.pixelSize: 0.4*dataRecta.height
-                    color: "#ffffffff"
+                    color: (!ismain) ? "#ffffffff" : "#fffffd00"
                     anchors.left: dataRecta.left
                     anchors.top: dataRecta.top
                 }
@@ -76,7 +76,7 @@ GridView {
                     text: average
                     font.bold: true
                     font.pixelSize: 2*nameText.font.pixelSize
-                    color: "#ffffffff"
+                    color: (!ismain) ? "#ffffffff" : "#fffffd00"
                     anchors.right: dataRecta.right
                     anchors.top: dataRecta.top
                 }
@@ -86,7 +86,7 @@ GridView {
                     text: (pluses != "") ? " "+pluses : " "
                     font.bold: true
                     font.pixelSize: 0.6*dataRecta.height
-                    color: "#ffffffff"
+                    color: "#fffffd00"
                     anchors.left: dataRecta.left
                     anchors.bottom: dataRecta.bottom
                 }

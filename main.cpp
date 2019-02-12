@@ -1,5 +1,6 @@
 #include <QGuiApplication>
 #include <QScreen>
+#include <QIcon>
 
 #include "engine/enginehandler.h"
 
@@ -8,6 +9,8 @@ int main(int argc, char *argv[])
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
     QGuiApplication app(argc, argv);
+
+    app.setWindowIcon(QIcon(":/ui/graphics/LessonFlow.png"));
 
     QScreen * screen = app.primaryScreen(); //GET SIZE OF SCREEN
 

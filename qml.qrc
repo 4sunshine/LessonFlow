@@ -7,5 +7,6 @@
         <file>ui/graphics/path868white.png</file>
         <file>sounds/minus0.wav</file>
         <file>sounds/plus0.wav</file>
+        <file>ui/graphics/LessonFlow.png</file>
     </qresource>
 </RCC>
