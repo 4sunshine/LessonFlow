@@ -1,4 +1,4 @@
-import QtQuick 2.11
+import QtQuick 2.12
 
 GridView {
 
@@ -11,7 +11,6 @@ GridView {
     verticalLayoutDirection: GridView.BottomToTop
 
     onCountChanged: {
-        console.log(studflowModel.rowCount());
         window.nstudents(studflowModel.rowCount())
     }
 

@@ -6,6 +6,7 @@ Window {
     signal subjectSelected(int classIndex, int lessonNumber)
     signal nstudents(int studentsCount) //COUNT OF STUDENTS IN FLOW
 
+    property var startScreen
     property var models //PROPERTY HOLDS CLASSNAMES
     property var popups //PROPERTY HOLDS STUDENTS
     property var optWidth //OPTIMAL CELL WIDTH IN STUDENTS FLOW MODEL
@@ -37,34 +38,30 @@ Window {
             y = Screen.height - height
     }
 
-    onModelsChanged: {
+    Component.onCompleted: {
+        var stScrn = Qt.createComponent("qrc:/ui/widgets/startElements.qml");
+        startScreen = stScrn.createObject(window, {"x": 0, "y": 0})
+    }
 
+    onModelsChanged: {
         var componentst = Qt.createComponent("qrc:/ui/widgets/subjectsTumbler.qml");
         var tumblersub=componentst.createObject(window,
                                                 {"x": 200, "y": 200})
-        tumblersub.model=window.models}
+        tumblersub.model=window.models
+    }
 
     onPopupsChanged: {
-        image.visible=false
+        startScreen.destroy(1)
+        color="#00000000"
         width=Screen.desktopAvailableWidth
         height=Screen.desktopAvailableHeight
-        color="#00000000"
-//        x:0
-//        y:0
+
 
         var componentst = Qt.createComponent("qrc:/ui/widgets/viewStudents.qml");
-        var studFlowView=componentst.createObject(window,
+        var studFlowView = componentst.createObject(window,
                                                 {"x": 0, "y": 0,
                                                   "cellWidth": optWidth})
         studFlowView.model=studflowModel
-        }
-        Image {
-            id: image
-            width: parent.width/6
-            height: image.width
-            x: (parent.width-image.width)/2
-            y: image.height/4
-            source: "qrc:/ui/graphics/path868white.png"
-        }
+    }
 
 }
