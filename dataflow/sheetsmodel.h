@@ -36,6 +36,7 @@ private:
 
     QSoundEffect m_plus; //PLUS SOUND EFFECT
     QSoundEffect m_minus; //MINUS SOUND EFFECT
+    QSoundEffect m_active; //IS ACTIVE SOUND EFFECT
 
     QRandomGenerator xCase;
     QList<ClassList*> classNames; //LIST OF STRUCTURES CLASSLIST

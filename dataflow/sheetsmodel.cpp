@@ -5,13 +5,16 @@ SheetsModel::SheetsModel(QObject *parent) : QObject(parent),
   googlewrapper(),
   listener(),
   m_plus(this),
-  m_minus(this)
+  m_minus(this),
+  m_active(this)
 {
     /*SOUND EFFECTS BLOCK*/
     m_plus.setSource(QUrl("qrc:/sounds/plus0.wav"));
     m_plus.setVolume(0.9);
     m_minus.setSource(QUrl("qrc:/sounds/minus0.wav"));
     m_minus.setVolume(0.9);
+    m_active.setSource(QUrl("qrc:/sounds/active0.wav"));
+    m_active.setVolume(0.9);
     /*SOUND EFFECTS BLOCK*/
 
     colInd();
@@ -303,6 +306,7 @@ void SheetsModel::btnHandler(int btnId)
     if (isLessonStarted && isOn[btnId-1] && !grading && !locked) {
 
         if (!isActive[btnId-1]){
+            m_active.play();
             isActive[btnId-1] = true;
             studentsflow.addStudent(createSingle(btnId-1));// IS MAIN FALSE PERMANENTLY
             order << btnId-1;
