@@ -8,6 +8,8 @@ SheetsModel::SheetsModel(QObject *parent) : QObject(parent),
   m_minus(this),
   m_active(this)
 {
+    connect(&listener, &Listener::connected, this, &SheetsModel::connected);
+
     /*SOUND EFFECTS BLOCK*/
     m_plus.setSource(QUrl("qrc:/sounds/plus0.wav"));
     m_plus.setVolume(0.9);
@@ -250,7 +252,11 @@ void SheetsModel::downloadData()
             listener.isActive = true; //start receive data from server
             emit gridPrepared();
 //*******************************************************************
-            googleSay("Привет, ребята! Отметьтесь на уроке");
+            if (isConnected)
+                googleSay("Привет, ребята! Отметьтесь на уроке");
+            else {
+                googleSay("Привет, ребята! Пока повторите материал");
+            }
 
             emit dataGot("popups",students);//STUDENTS COMPLETED SIGNAL
 
@@ -840,4 +846,11 @@ void SheetsModel::clearNotMain()
         }
         i++;
     }
+}
+
+void SheetsModel::connected()
+{
+    googleSay("Соединение с сервером установлено");
+    isConnected = true;
+    // ADD HERE PROCEDURE TO PLAY SOUND INSTEAD OF GOOGLESAY ?
 }

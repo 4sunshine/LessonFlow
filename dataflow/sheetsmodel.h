@@ -67,6 +67,7 @@ private:
     QString sheetId; //ID OF DATA SHEET
     QString pmColumn; // COLUMN OF PLUSES AND MINUSES IN SHEETS
 
+    bool isConnected = false; // IS CONNECTION WITH SERVER CLIENT ACTIVE
     bool locked = false; // BLOCK BUTTONS
     bool isLessonStarted = false;
     bool grading = false; // TRUE IF TEACHER GRADING MAIN STUDENT
@@ -135,6 +136,7 @@ private slots:
     void btnHandler(int btnId); //HANDLE BUTTON EVENT
     void irHandler(int irCode); //HANDLE IR EVENT
     void playAudio();
+    void connected(); // INFORM ABOUT NEW CONNECTION
 
 
 

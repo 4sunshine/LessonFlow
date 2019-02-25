@@ -15,8 +15,9 @@ public:
     bool isActive = false; //isActiveState of server
 
 signals:
-    void buttonEvent(int buttonId); //STUDENT PUSHED BUTTON EVENT
-    void irSignal(int irCode); //BUTTON SIGNAL WITH ID
+    void buttonEvent(int buttonId); // STUDENT PUSHED BUTTON EVENT
+    void irSignal(int irCode); // BUTTON SIGNAL WITH ID
+    void connected(); // GOT NEW CONNECTION
 
 
 public slots:

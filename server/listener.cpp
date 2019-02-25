@@ -17,7 +17,7 @@ Listener::Listener(QObject *parent) : QObject(parent)
 void Listener::newConnection()
 {
     socket = server->nextPendingConnection();
-    qInfo() << "GOT CONNECTION!!!";
+    emit connected();
 
 //    socket -> write("Hello, World!!! I am echo server!\r\n");
 
