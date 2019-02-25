@@ -126,7 +126,7 @@ void SheetsModel::getDates(int lessonNum)
         //CHECK FOR COLUMN WITH PLUSES AND MINUSES:
 
         if(datMo[datMo.size()-1][0].toString() != "PLUMIN") {
-            auto reply2 = googlewrapper.updateSheet("PLUMIN",
+            QNetworkReply * reply2 = googlewrapper.updateSheet("PLUMIN",
                                       columnIndexes[datMo.count()+3],7);//SEE SHEET STRUCTURE
             connect(reply2, &QNetworkReply::finished, [=]() {
                 if (reply2->error() != QNetworkReply::NoError) {
@@ -141,7 +141,7 @@ void SheetsModel::getDates(int lessonNum)
         else if (datMo[datMo.size()-1][0].toString() == "PLUMIN")
         {
 
-            auto reply3 = googlewrapper.getPM(columnIndexes[datMo.count()+2]); //SEE SHEET STRUCTURE
+            QNetworkReply * reply3 = googlewrapper.getPM(columnIndexes[datMo.count()+2]); //SEE SHEET STRUCTURE
 
             pmColumn = columnIndexes[datMo.count()+2]; //INITIALISE +- COLUMN
 
@@ -341,7 +341,7 @@ void SheetsModel::irHandler(int irCode)
 
     int mId; //ID OF CURRENTLY GRADING STUDENT
 
-    if (gradeId == 99){
+    if (gradeId == 99) {
 
         mId = studentsflow.getLast();
 
@@ -787,7 +787,7 @@ void SheetsModel::markUpdate(int mark, int id)
 
     updateTotalProb();
 
-    auto updateReply = googlewrapper.updateSheet(QString::number(mark),
+    QNetworkReply * updateReply = googlewrapper.updateSheet(QString::number(mark),
                                                  columnIndexes[lastfree+3], startId+id);
 
     connect(updateReply, &QNetworkReply::finished, [=]() {
@@ -820,7 +820,7 @@ void SheetsModel::absent()
         offStudents << (*mksAtd[i]).last();
     }
 
-    auto updateReply = googlewrapper.updateSheet(offStudents, curCol);
+    QNetworkReply * updateReply = googlewrapper.updateSheet(offStudents, curCol);
     connect(updateReply, &QNetworkReply::finished, [=]() {
         if (updateReply->error() != QNetworkReply::NoError) {
             emit error(updateReply->errorString());
