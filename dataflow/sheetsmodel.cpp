@@ -819,7 +819,7 @@ void SheetsModel::absent()
     QStringList offStudents; // ABSENT STUDENTS LIST
     for (int i = 0; i < studentsCount; i++) {
         if (!isOn[i])
-            (*mksAtd[i]).last() = QString(u8"'п"); // BY DEFAULT "п"; ' - TO AVOID AUTOSUBSTITUTION
+            (*mksAtd[i]).last() = QString(u8"п"); // BY DEFAULT "п"; ' - TO AVOID AUTOSUBSTITUTION
 
         offStudents << (*mksAtd[i]).last();
     }
