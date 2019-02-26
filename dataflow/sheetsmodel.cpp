@@ -271,14 +271,14 @@ QString SheetsModel::getSex(QString name)
                                "Вадим","Владимир","Андрей","Денис","Максим",
                                   "Леонид","Артемий","Владислав","Григорий",
                                   "Томас","Лев","Марк","Игорь","Егор","Кирилл",
-                                  "Матвей","Михаил","Никита"};
+                                   "Михаил","Никита","Федор","Артем"};
     int i=0;
-    while(maleNames[i]!=name){
+    while(maleNames[i] != name){
         i++;
-        if (i==maleNames.length())
+        if (i == maleNames.length())
             break;
          }
-    if (i==maleNames.length()){
+    if (i == maleNames.length()){
         return "F";
     }
     else
@@ -508,8 +508,6 @@ void SheetsModel::googleSay(QString phrase)
     connect(replygo, &QNetworkReply::finished, [=]() {
         if (replygo->error() != QNetworkReply::NoError) {
             emit error(replygo->errorString());
-//            qInfo()<<replygo->errorString();
-//            qInfo()<<replygo->readAll();
             return;
         }
         const QByteArray json = replygo->readAll();
