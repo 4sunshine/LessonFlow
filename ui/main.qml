@@ -26,6 +26,7 @@ Window {
         if( optCount > 0 ) {
             if ( studentsCount > 0) {
                 height = (optWidth/0.95)*( Math.floor((studentsCount-1)/optCount)+1 )
+                flags = Qt.WindowStaysOnTopHint
             }
             else {
                 height = Screen.desktopAvailableHeight/40
