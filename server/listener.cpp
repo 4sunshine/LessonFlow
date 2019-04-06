@@ -31,15 +31,16 @@ void Listener::readMessage()
     {
         QByteArray array = socket->readAll();
         qInfo() << array;
-
         if (array.contains(";"))
         {
             QList<QByteArray> recData;//RECEIVED DATA
             recData = array.split(";"[0]);
-            qInfo() << "BUTTON EVENT";
-            qInfo() << recData[0];
-            qInfo() << recData[1];
-            emit buttonEvent(recData[0].toInt());//READ BUTTON ID
+            for (int i = 0; i < recData.length(); ++i) {
+                emit buttonEvent(recData[2*i].toInt());//READ BUTTON ID
+                qInfo() << "BUTTON EVENT";
+                qInfo() << recData[2*i];
+                qInfo() << recData[2*i+1];
+            }
         }
         else {
             //CONVERT BYTES TO DEC CODE OF BUTTON
