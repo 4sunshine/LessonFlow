@@ -103,6 +103,8 @@ private:
     int sinceLastMark(int id, int mark); // RETURN BY ID NUMBER OF LESSONS SINCE LAST MARK
     int sinceLastMark(int id); // RETURN BY ID SINCE ANY LAST MARK
     int coinToss(QList<double>); //RETURN STUDENT'S ID TO ASK FROM DECISION LIST
+    // << CURRENTLY NOT USED FOR TESTING PURPOSE. SUBSTITUTED BY FIND INDEX OF MAX PROBABILITY
+    int indexOfMax(QList<double>, double); //RETURN LAST INDEX WITH MAX VALUE LESS THEN MAXVAL
 
     const SingleStudent createSingle(int id); //CREATE A SINGLE STUDENT BY ID
 

@@ -397,7 +397,7 @@ void SheetsModel::irHandler(int irCode)
             }
             else {
                 studentsflow.removeAll();
-                clearNotMain();
+                clearNotMain(); //PROBABLE MAIN STATUS ERROR WHEN STUDENTS REMOVED
             }
 
             break;
@@ -698,10 +698,17 @@ void SheetsModel::callStudent()
     //IF THERE ARE NO STUDENTS TO ANSWER CASE 1, ELSE CASE 2
 
     if (order.isEmpty()){
-
+        /* ******TEMPORARY NOT USING COINTOSS********
         int id = coinToss(decisionList);
         while (isMain[id])
             id = coinToss(decisionList);
+            */
+
+        /* DOWNGRADE FROM MAX PROBABILITY TO MIN */
+        int id = indexOfMax(probability, 2.);
+        while (isMain[id]) //POTENTIAL PROGRAM KILL
+            id = indexOfMax(probability, probability[id]);
+
 
         googleSay("Отвечает "+names[id]+" "+surnames[id]);
         isMain[id] = true;
@@ -711,9 +718,16 @@ void SheetsModel::callStudent()
         emit studentSelected(id); //REVISE IS IT NEEDED?
     }
     else {
+        /* ***** TEMPORARY NOT USING COINTOSS ******
         int id = coinToss(currentDecisionList);
         while (isMain[id])
             id = coinToss(currentDecisionList);
+        */
+
+        /* DOWNGRADE FROM MAX PROBABILITY TO MIN */
+        int id = indexOfMax(currentProbability, 2.);
+        while (isMain[id]) //POTENTIAL PROGRAM KILL
+            id = indexOfMax(currentProbability, currentProbability[id]);
 
         googleSay("Отвечает "+names[id]+" "+surnames[id]);
         isMain[id] = true;
@@ -730,11 +744,23 @@ int SheetsModel::coinToss(QList<double> decList)
     qInfo() << toss;
     qInfo() << "toss result of:";
     int i = 0;
-    while ((toss > decList[i])&&( i < studentsCount)){
+    while (( toss > decList[i] ) && ( i < studentsCount) ){
         i++;
     }
     qInfo() << i;
     return i;
+}
+
+int SheetsModel::indexOfMax(QList<double> dList, double maxVal) {
+    double max = 0.;
+    int maxIndex = 0;
+    for (int i = 0; i < dList.length(); i++) {
+        if ( (dList[i] > max) && ( dList[i] < maxVal ) ) {
+            max = dList[i];
+            maxIndex = i;
+        }
+    }
+    return maxIndex;
 }
 
 const SingleStudent SheetsModel::createSingle(int id)
